@@ -1,0 +1,72 @@
+{
+  "format": 1,
+  "title": {
+    "en": "xuedipiaofei's DSH plugins",
+    "zh": "xuedipiaofei 的 DSH 插件"
+  },
+  "description": {
+    "en": "Small, focused DeepSeek Harness plugins.",
+    "zh": "一些专注单一用途的 DeepSeek Harness 插件。"
+  },
+  "metadata": {
+    "categories": {
+      "session": {
+        "title": {
+          "en": "Sessions & Messages",
+          "zh": "会话与消息"
+        }
+      }
+    },
+    "labels": {
+      "title": {
+        "title": {
+          "en": "Session titles",
+          "zh": "会话标题"
+        }
+      }
+    }
+  },
+  "plugins": [
+    {
+      "name": "dsh-session-title-dated",
+      "title": {
+        "en": "Dated session titles",
+        "zh": "日期分类会话标题"
+      },
+      "description": {
+        "en": "Names every new session DATE | CATEGORY | NAME with the session model and a deterministic local fallback.",
+        "zh": "用「日期 | 分类 | 名称」自动命名新会话，模型不可用时本地降级。"
+      },
+      "author": "xuedipiaofei",
+      "icon": "../icon.svg",
+      "homepage": "https://github.com/xuedipiaofei/dsh-session-title-dated",
+      "repository": {
+        "url": "https://github.com/xuedipiaofei/dsh-session-title-dated"
+      },
+      "metadata": {
+        "category": "session",
+        "keywords": [
+          "session",
+          "title",
+          "naming",
+          "automation"
+        ],
+        "labels": [
+          "title"
+        ]
+      },
+      "versions": [
+        {
+          "version": "0.1.0",
+          "publishTimestamp": 1793151016,
+          "source": {
+            "type": "npm"
+          },
+          "engines": {
+            "dsh": ">=0.2.1-rc.3 <0.3.0"
+          }
+        }
+      ]
+    }
+  ]
+}

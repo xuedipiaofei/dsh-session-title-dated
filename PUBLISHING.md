@@ -1,0 +1,232 @@
+# Publishing dsh-session-title-dated
+
+This repository is already shaped as a DSH bundle and a format-1 market entry.
+The remaining work is identity-sensitive and public: creating the GitHub
+repository, publishing to npm, and opening the community-list PR. Those actions
+need your accounts; this file is the exact runbook.
+
+Current defaults:
+
+| Field | Value |
+|---|---|
+| GitHub owner/repo | `xuedipiaofei/dsh-session-title-dated` (name available at preparation time) |
+| npm package | `dsh-session-title-dated` (unclaimed at preparation time) |
+| License | MIT, copyright `xuedipiaofei` |
+| DSH range | `>=0.2.1-rc.3 <0.3.0` |
+
+If any of these change, update every occurrence with:
+
+```sh
+grep -R "xuedipiaofei\|dsh-session-title-dated" -n \
+  package.json cordis.patch.yml market README.md README.zh.md PUBLISHING.md
+```
+
+## 0. Prerequisites
+
+- A GitHub account (`xuedipiaofei`) and a public repository named
+  `dsh-session-title-dated`.
+- An npm account, logged in on this machine:
+
+  ```sh
+  npm login
+  npm whoami
+  ```
+
+  This machine is **not** currently authenticated to npm.
+- No build step is required; the package ships plain ESM.
+
+## 1. Verify the repository
+
+```sh
+cd ~/Documents/deepseek-harness/default-workspace/dsh-session-title-dated
+npm test
+npm pack --dry-run
+```
+
+`npm test` runs the format tests, the provider tests with a stubbed executor,
+and metadata/index checks. `npm pack --dry-run` must list only:
+
+```text
+lib/index.js
+lib/format.js
+cordis.patch.yml
+market/index.json
+icon.svg
+README.md
+README.zh.md
+LICENSE
+package.json
+```
+
+No `node_modules`, test fixtures, or profile files should appear.
+
+## 2. Create and push the GitHub repository
+
+Create an **empty public** repository (no README, no license) at
+<https://github.com/new> with the name `dsh-session-title-dated`, then:
+
+```sh
+git init -b main
+git add .
+git commit -m "Initial release: dated, categorised DSH session titles"
+git remote add origin git@github.com:xuedipiaofei/dsh-session-title-dated.git
+git push -u origin main
+```
+
+On the repository page, add the topic **`dsh-plugin`**. The community list
+requires it, and it makes the repository discoverable.
+
+## 3. Publish to npm
+
+The name is unscoped, so public access is the default. Publish only after the
+tests and the tarball inspection pass.
+
+```sh
+npm publish --access public
+npm view dsh-session-title-dated version
+npm view dsh-session-title-dated dist.tarball
+```
+
+If npm rejects the name because it was claimed in the meantime, switch to a
+scope. Change the package name in **three** places, re-run `npm test`, then
+publish:
+
+- `package.json` → `name`
+- `cordis.patch.yml` → the inserted `name:`
+- `market/index.json` → `plugins[0].name`
+
+A scoped package (`@your-scope/dsh-session-title-dated`) also needs
+`"publishConfig": { "access": "public" }` (already present).
+
+npm versions are effectively permanent; do not publish a version you have not
+tested, and do not reuse `0.1.0` after unpublishing.
+
+## 4. Tag the release
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+## 5. Update and host the market index
+
+`market/index.json` currently points at the npm source. After the first publish,
+set `publishTimestamp` to the real publish time:
+
+```sh
+node - <<'NODE'
+const fs = require('node:fs')
+const file = 'market/index.json'
+const index = JSON.parse(fs.readFileSync(file, 'utf8'))
+index.plugins[0].versions[0].publishTimestamp = Math.floor(Date.now() / 1000)
+fs.writeFileSync(file, `${JSON.stringify(index, null, 2)}\n`)
+NODE
+npm run validate:index
+```
+
+`npm run validate:index` needs the official validator once:
+
+```sh
+npm install --no-save --no-package-lock @deepseek-ai/dsh-plugin-market-index@0.2.1-rc.3
+npm run validate:index
+rm -rf node_modules
+```
+
+Commit and push the timestamp change.
+
+### Index URL to share
+
+Use jsDelivr over GitHub (HTTPS, no redirects, no Pages setup):
+
+```text
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@main/market/index.json
+```
+
+The `@main` form follows the latest commit. For a reproducible source use
+`@v0.1.0` instead. jsDelivr caches; a new release may take a while to appear.
+GitHub Pages also works: enable Pages from the repository root and use
+
+```text
+https://xuedipiaofei.github.io/dsh-session-title-dated/market/index.json
+```
+
+DSH refuses index URLs with redirects, credentials, fragments, or queries.
+
+### Test a real install
+
+In DSH: **Plugins → Discover → Index sources**, add the jsDelivr URL, install
+**Dated session titles**, then start a new conversation and send one message.
+The sidebar title should become `DATE | CATEGORY | NAME` after the first
+request starts.
+
+For a CLI profile:
+
+```sh
+dsh plugin --profile title-test add dsh-session-title-dated@0.1.0
+dsh --profile title-test --dump-config | grep -A8 session-title
+```
+
+Verify the composed tree disables `session-title-llm` and inserts
+`session-title-dated`. Do **not** enable
+`@deepseek-ai/dsh-experimental-session-titles-bundle` in the same profile.
+
+## 6. Submit to the community list
+
+The main community index is generated from
+[awesome-dsh-plugin](https://github.com/awesome-dsh-plugin/awesome-dsh-plugin).
+It feeds `dsh-market`, `https://cdn.jsdelivr.net/npm/dsh-plugin-catalog/index.json`,
+and the site.
+
+1. Fork `awesome-dsh-plugin/awesome-dsh-plugin`.
+2. Copy `market/awesome-entry.yml` to:
+
+   ```text
+   data/plugins/xuedipiaofei__dsh-session-title-dated.yml
+   ```
+
+3. Commit only that file and open a pull request.
+4. Keep the repository public and at least **1 day old**; CI checks the age,
+   the `dsh.bundle` manifest, the `dsh-plugin` topic, and formatting.
+5. A maintainer reads the source and checks the description against it. Do not
+   overstate features in the one-line description.
+
+After merge, the community catalog and dsh-market pick the entry up
+automatically. Users can then add only the community catalog source:
+
+```text
+https://cdn.jsdelivr.net/npm/dsh-plugin-catalog/index.json
+```
+
+The repository's `package.json` `repository` field points back at the listed
+repository, which is what links npm downloads to the entry.
+
+## 7. Future releases
+
+For each release:
+
+1. Bump `version` in `package.json`.
+2. Add a `CHANGELOG.md` entry.
+3. Update `market/index.json` version and `publishTimestamp`.
+4. Run `npm test` and `npm run validate:index`.
+5. `npm publish --access public`.
+6. `git tag vX.Y.Z && git push --tags`.
+7. Push the index update.
+
+Keep `engines.dsh` in sync with the DSH versions you actually test. If DSH 0.3
+changes the session-title API, update the plugin and widen the range in a new
+release; do not widen it without testing, because the bundle row ids and the
+executor import are version-sensitive.
+
+## Pre-publish checklist
+
+- [ ] `npm test` passes
+- [ ] `npm pack --dry-run` lists only intended files
+- [ ] `private` is absent from `package.json`
+- [ ] `repository`/`homepage`/`bugs` point at `xuedipiaofei/dsh-session-title-dated`
+- [ ] README links and index URL use the same owner
+- [ ] `assets/icon-180.png` exists (awesome-list icon)
+- [ ] `npm run validate:index` passes with the official validator
+- [ ] GitHub repository is public and has the `dsh-plugin` topic
+- [ ] npm login works and the package name is still available
+- [ ] A test profile installs the bundle and a new session gets the expected title
+- [ ] The official session-titles experimental bundle is not enabled alongside it

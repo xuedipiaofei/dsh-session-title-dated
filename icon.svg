@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Dated session titles">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#111c33"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+    <clipPath id="calendar">
+      <rect x="120" y="210" width="330" height="510" rx="48"/>
+    </clipPath>
+  </defs>
+
+  <rect width="1024" height="1024" rx="220" fill="url(#bg)"/>
+  <rect x="14" y="14" width="996" height="996" rx="206" fill="none" stroke="#1e293b" stroke-width="4"/>
+
+  <g clip-path="url(#calendar)">
+    <rect x="120" y="210" width="330" height="510" rx="48" fill="#0f1b33"/>
+    <rect x="120" y="210" width="330" height="104" fill="url(#accent)"/>
+    <rect x="120" y="210" width="330" height="510" rx="48" fill="none" stroke="#38bdf8" stroke-width="12"/>
+  </g>
+  <rect x="180" y="178" width="34" height="84" rx="17" fill="#e2e8f0"/>
+  <rect x="356" y="178" width="34" height="84" rx="17" fill="#e2e8f0"/>
+
+  <g fill="#1e3a5f">
+    <rect x="176" y="378" width="66" height="58" rx="14"/>
+    <rect x="252" y="378" width="66" height="58" rx="14"/>
+    <rect x="328" y="378" width="66" height="58" rx="14"/>
+    <rect x="176" y="460" width="66" height="58" rx="14"/>
+    <rect x="252" y="460" width="66" height="58" rx="14"/>
+    <rect x="328" y="460" width="66" height="58" rx="14"/>
+    <rect x="176" y="542" width="66" height="58" rx="14"/>
+    <rect x="252" y="542" width="66" height="58" rx="14"/>
+  </g>
+  <rect x="176" y="624" width="218" height="44" rx="22" fill="#38bdf8"/>
+
+  <rect x="500" y="300" width="10" height="360" rx="5" fill="#1e293b"/>
+
+  <rect x="556" y="300" width="360" height="68" rx="34" fill="#f8fafc"/>
+  <rect x="556" y="420" width="292" height="68" rx="34" fill="url(#accent)"/>
+  <rect x="556" y="540" width="330" height="68" rx="34" fill="#64748b"/>
+  <rect x="556" y="660" width="228" height="68" rx="34" fill="#334155"/>
+</svg>

@@ -1,0 +1,58 @@
+{
+  "name": "dsh-session-title-dated",
+  "version": "0.1.0",
+  "description": "DSH session titles in the form DATE | CATEGORY | NAME, generated from the session model with a deterministic local fallback.",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "session-title",
+    "naming",
+    "productivity"
+  ],
+  "author": "xuedipiaofei",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xuedipiaofei/dsh-session-title-dated.git"
+  },
+  "homepage": "https://github.com/xuedipiaofei/dsh-session-title-dated#readme",
+  "bugs": {
+    "url": "https://github.com/xuedipiaofei/dsh-session-title-dated/issues"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "market/index.json",
+    "icon.svg",
+    "README.md",
+    "README.zh.md"
+  ],
+  "engines": {
+    "dsh": ">=0.2.1-rc.3 <0.3.0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-session-title-llm": "^0.2.1-rc.3"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "icon": "./icon.svg",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "node test/format.test.mjs && node test/provider.test.mjs && node scripts/check.mjs",
+    "check": "node scripts/check.mjs",
+    "validate:index": "node scripts/validate-index.mjs",
+    "pack:check": "npm pack --dry-run"
+  }
+}

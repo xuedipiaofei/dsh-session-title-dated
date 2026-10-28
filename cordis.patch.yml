@@ -1,0 +1,21 @@
+# DSH profile bundle for dated, categorised session titles.
+#
+# Selecting this bundle replaces the shipped first-prompt title provider. The
+# inserted row is the provider package itself; disabling `session-title-llm`
+# keeps only one provider registered, as the title service requires.
+- id: session-title-llm
+  disabled: true
+
+- insert:
+    - id: session-title-dated
+      name: dsh-session-title-dated
+      config:
+        # first-prompt: one title per session (cheap, matches the shipped
+        # default). Change to all-prompts to retitle as the task evolves.
+        cadence: first-prompt
+        # MMDD matches the reference list (1027). Use YYMM for 2610.
+        dateFormat: MMDD
+        timeZone: Asia/Shanghai
+        maxInputBytes: 8192
+        maxOutputTokens: 4096
+        timeoutMs: 60000
