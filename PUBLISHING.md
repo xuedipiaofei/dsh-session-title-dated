@@ -110,19 +110,37 @@ git push origin v0.1.0
 
 ## 5. Update and host the market index
 
-`market/index.json` currently points at the npm source. After the first publish,
-set `publishTimestamp` to the real publish time:
+`market/index.json` currently pins the first public GitHub commit, so the index
+works **before** npm publication. Every time the plugin code changes, re-pin the
+commit and refresh `publishTimestamp`:
 
 ```sh
-node - <<'NODE'
+COMMIT=$(git rev-parse HEAD)
+PUBLISHED=$(date +%s) node - <<'NODE'
 const fs = require('node:fs')
 const file = 'market/index.json'
 const index = JSON.parse(fs.readFileSync(file, 'utf8'))
-index.plugins[0].versions[0].publishTimestamp = Math.floor(Date.now() / 1000)
+const version = index.plugins[0].versions[0]
+version.source = {
+  type: 'git',
+  url: 'https://github.com/xuedipiaofei/dsh-session-title-dated',
+  commit: process.env.COMMIT,
+}
+version.publishTimestamp = Number(process.env.PUBLISHED)
 fs.writeFileSync(file, `${JSON.stringify(index, null, 2)}\n`)
 NODE
 npm run validate:index
 ```
+
+After the npm release, you may switch the same version to the registry source
+instead of the Git commit:
+
+```json
+"source": { "type": "npm" }
+```
+
+Either source is valid; Git makes the index usable immediately, npm gives faster
+installs and a download count. Do not list the same version twice.
 
 `npm run validate:index` needs the official validator once:
 
@@ -132,7 +150,7 @@ npm run validate:index
 rm -rf node_modules
 ```
 
-Commit and push the timestamp change.
+Commit and push the index change.
 
 ### Index URL to share
 
@@ -206,7 +224,8 @@ For each release:
 
 1. Bump `version` in `package.json`.
 2. Add a `CHANGELOG.md` entry.
-3. Update `market/index.json` version and `publishTimestamp`.
+3. Update `market/index.json` version, `publishTimestamp`, and — for a Git
+   source — the pinned 40-character commit.
 4. Run `npm test` and `npm run validate:index`.
 5. `npm publish --access public`.
 6. `git tag vX.Y.Z && git push --tags`.
@@ -226,6 +245,7 @@ executor import are version-sensitive.
 - [ ] README links and index URL use the same owner
 - [ ] `assets/icon-180.png` exists (awesome-list icon)
 - [ ] `npm run validate:index` passes with the official validator
+- [ ] `market/index.json` pins a pushed 40-character commit (or an npm version)
 - [ ] GitHub repository is public and has the `dsh-plugin` topic
 - [ ] npm login works and the package name is still available
 - [ ] A test profile installs the bundle and a new session gets the expected title

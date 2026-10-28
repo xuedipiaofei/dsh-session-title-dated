@@ -56,7 +56,12 @@ assert.ok(listed.title?.en, 'plugin entry needs an English title')
 assert.ok(listed.description?.en, 'plugin entry needs an English description')
 assert.equal(listed.versions?.[0]?.version, pkg.version, 'index version must match package.json')
 assert.equal(listed.versions?.[0]?.engines?.dsh, pkg.engines.dsh, 'index engines.dsh must match package.json')
-assert.equal(listed.versions?.[0]?.source?.type, 'npm', 'index currently points at the npm release')
+const source = listed.versions?.[0]?.source
+assert.ok(source && (source.type === 'npm' || source.type === 'git'), 'index source must be npm or git')
+if (source.type === 'git') {
+  assert.match(source.url, /^https:\/\/github\.com\/[^/]+\/[^/]+$/u, 'git source URL must be canonical')
+  assert.match(source.commit, /^[0-9a-f]{40}$/u, 'git source must pin a full commit SHA')
+}
 assert.ok(Number.isInteger(listed.versions[0].publishTimestamp), 'publishTimestamp must be integer Unix seconds')
 
 const awesome = text('market/awesome-entry.yml')
@@ -64,5 +69,11 @@ assert.match(awesome, /category: session/u, 'awesome-list entry category should 
 assert.match(awesome, /url: https:\/\/github\.com\//u, 'awesome-list entry needs the repository URL')
 
 console.log(`checks passed: ${pkg.name}@${pkg.version}`)
-console.log(`install target: ${pkg.name}@${pkg.version}`)
+console.log(
+  `install target: ${
+    source.type === 'git'
+      ? `git+${source.url}.git#${source.commit}`
+      : `${pkg.name}@${pkg.version}`
+  }`,
+)
 console.log(`files: ${pkg.files.join(', ')}`)
