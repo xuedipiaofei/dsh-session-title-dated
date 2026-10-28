@@ -1,7 +1,3 @@
-# Copy this file to the awesome-dsh-plugin repository as:
-#   data/plugins/xuedipiaofei__dsh-session-title-dated.yml
-# Then open a pull request. Do not edit the generated README files there.
-
 url: https://github.com/xuedipiaofei/dsh-session-title-dated
 name: xuedipiaofei/dsh-session-title-dated
 category: session

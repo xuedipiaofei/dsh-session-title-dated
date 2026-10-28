@@ -229,6 +229,31 @@ and the site.
 5. A maintainer reads the source and checks the description against it. Do not
    overstate features in the one-line description.
 
+### Automated submission
+
+After the one-day gate, `scripts/community-pr.mjs` can perform the fork, commit,
+and pull request through the GitHub REST API. It also adds the required
+`dsh-plugin` topic and is idempotent: an existing branch, identical file, or open
+PR is detected instead of duplicated.
+
+```sh
+cd ~/Documents/deepseek-harness/default-workspace/dsh-session-title-dated
+node scripts/community-pr.mjs --check     # public preflight, no writes
+node scripts/community-pr.mjs --dry-run --force  # show planned calls
+node scripts/community-pr.mjs             # do it
+```
+
+Authentication, in priority order:
+
+1. `GH_TOKEN` or `GITHUB_TOKEN` in the environment.
+2. A token file at `DSH_GITHUB_TOKEN_FILE` or `~/.dsh/github-token`
+   (`chmod 600`).
+3. `gh auth token`, when the GitHub CLI is installed and logged in.
+
+A classic token with `public_repo` (or `repo`) is the simplest; the script needs
+to fork a public repository and open a PR against it. Without a token it only
+performs public reads and prints the manual steps, so it is safe to run early.
+
 After merge, the community catalog and dsh-market pick the entry up
 automatically. Users can then add only the community catalog source:
 
