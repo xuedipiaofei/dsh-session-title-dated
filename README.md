@@ -51,8 +51,8 @@ https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.1.0/market/i
 
 Then install **Dated session titles** from the list. The plugin installs as a
 profile bundle and appears in the Plugins page, where it can be enabled or
-disabled like any other bundle. The index pins a GitHub commit, so it works
-without an npm release.
+disabled like any other bundle. The index pins a GitHub commit for reproducible
+installs; the package is also published on npm.
 
 ### CLI
 
@@ -62,7 +62,7 @@ From GitHub:
 dsh plugin --profile <profile> add github:xuedipiaofei/dsh-session-title-dated
 ```
 
-After the package is published to npm, the shorter form works too:
+The package is also on npm, so the shorter form works:
 
 ```sh
 dsh plugin --profile <profile> add dsh-session-title-dated

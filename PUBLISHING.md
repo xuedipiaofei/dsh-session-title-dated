@@ -1,16 +1,18 @@
 # Publishing dsh-session-title-dated
 
 This repository is already shaped as a DSH bundle and a format-1 market entry.
-The remaining work is identity-sensitive and public: creating the GitHub
-repository, publishing to npm, and opening the community-list PR. Those actions
-need your accounts; this file is the exact runbook.
 
-Current defaults:
+## Current release (2026-10-28)
+
+- GitHub: `xuedipiaofei/dsh-session-title-dated` pushed, tag `v0.1.0`.
+- npm: `dsh-session-title-dated@0.1.0` published through staged approval.
+- Market index: `market/index.json` pins the GitHub commit; the tag URL is live.
+- Community-list PR: pending the repository's one-day age requirement.
 
 | Field | Value |
 |---|---|
-| GitHub owner/repo | `xuedipiaofei/dsh-session-title-dated` (name available at preparation time) |
-| npm package | `dsh-session-title-dated` (unclaimed at preparation time) |
+| GitHub owner/repo | `xuedipiaofei/dsh-session-title-dated` |
+| npm package | `dsh-session-title-dated` |
 | License | MIT, copyright `xuedipiaofei` |
 | DSH range | `>=0.2.1-rc.3 <0.3.0` |
 
@@ -81,11 +83,29 @@ requires it, and it makes the repository discoverable.
 The name is unscoped, so public access is the default. Publish only after the
 tests and the tarball inspection pass.
 
+npm currently requires proof-of-presence for direct publishing. On an
+`auth-and-writes` account the web-login token can be refused with `E403`, and a
+granular token with bypass-2FA may be blocked by the token form. **Staged
+publishing avoids that**: staging accepts the normal login token, and approval
+performs the 2FA step.
+
 ```sh
-npm publish --access public
+# 1. Stage (no 2FA)
+npm stage publish --access public
+# → staged with id <stage-id>
+
+# 2. Approve (prompts for OTP), or use the web page:
+#    https://www.npmjs.com/settings/xuedipiaofei/staged-packages
+npm stage approve <stage-id>
+
+# 3. Verify
 npm view dsh-session-title-dated version
 npm view dsh-session-title-dated dist.tarball
 ```
+
+A direct `npm publish --access public` is still valid when the account or token
+allows it. If it returns `E403` about 2FA, use the staged flow above instead of
+creating a bypass token.
 
 If npm rejects the name because it was claimed in the meantime, switch to a
 scope. Change the package name in **three** places, re-run `npm test`, then

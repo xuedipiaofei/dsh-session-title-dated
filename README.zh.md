@@ -37,7 +37,7 @@
 https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.1.0/market/index.json
 ```
 
-然后在列表里安装 **Dated session titles / 日期分类会话标题**。插件以 profile bundle 的形式安装，之后可在插件页启停。索引钉的是 GitHub commit，所以不依赖 npm 发布。
+然后在列表里安装 **Dated session titles / 日期分类会话标题**。插件以 profile bundle 的形式安装，之后可在插件页启停。索引钉的是 GitHub commit，安装可复现；npm 上也有发布版本。
 
 ### CLI
 
@@ -47,7 +47,7 @@ https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.1.0/market/i
 dsh plugin --profile <profile> add github:xuedipiaofei/dsh-session-title-dated
 ```
 
-npm 发布后也可以用短形式：
+npm 上已有发布版本，也可以用短形式：
 
 ```sh
 dsh plugin --profile <profile> add dsh-session-title-dated
