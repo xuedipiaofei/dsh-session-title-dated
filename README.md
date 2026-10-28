@@ -46,7 +46,7 @@ and mirrors conventions used by other coding agents.
 Add this market index source in **Plugins → Discover → Index sources**:
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@main/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.1.0/market/index.json
 ```
 
 Then install **Dated session titles** from the list. The plugin installs as a

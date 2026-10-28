@@ -157,12 +157,13 @@ Commit and push the index change.
 Use jsDelivr over GitHub (HTTPS, no redirects, no Pages setup):
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@main/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.1.0/market/index.json
 ```
 
-The `@main` form follows the latest commit. For a reproducible source use
-`@v0.1.0` instead. jsDelivr caches; a new release may take a while to appear.
-GitHub Pages also works: enable Pages from the repository root and use
+Prefer the tag URL: jsDelivr caches `@main` for a long time, and a cached copy
+can still point at an older source. `@v0.1.0` was fetched fresh after the tag
+was pushed; bump the tag for each release. GitHub Pages also works: enable Pages
+from the repository root and use
 
 ```text
 https://xuedipiaofei.github.io/dsh-session-title-dated/market/index.json

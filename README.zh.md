@@ -34,7 +34,7 @@
 在 **插件 → 发现（Discover）→ 索引源** 添加：
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@main/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.1.0/market/index.json
 ```
 
 然后在列表里安装 **Dated session titles / 日期分类会话标题**。插件以 profile bundle 的形式安装，之后可在插件页启停。索引钉的是 GitHub commit，所以不依赖 npm 发布。
