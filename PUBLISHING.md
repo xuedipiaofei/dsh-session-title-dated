@@ -4,8 +4,8 @@ This repository is already shaped as a DSH bundle and a format-1 market entry.
 
 ## Current releases
 
-- **0.2.0 (2026-10-30)**: tagged `v0.2.0` on GitHub; npm publish pending
-  (the npm session expired, so use `npm login` + the staged flow or OIDC).
+- **0.2.0 (2026-10-30)**: published on npm, tagged `v0.2.0` on GitHub.
+  Installed successfully from npm and from the tag in throwaway profiles.
 - **0.1.0 (2026-10-28)**: published on npm, tag `v0.1.0`, listed in the
   community directory (PR #10248 merged).
 - The community listing points at the repository/npm package, so a version bump

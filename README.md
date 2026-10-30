@@ -67,10 +67,6 @@ From npm:
 dsh plugin --profile <profile> add dsh-session-title-dated
 ```
 
-> 0.2.0 is tagged on GitHub before the npm release; npm may still serve 0.1.0
-> until the next publish. The `v0.2.0` index above installs the tagged Git
-> commit.
-
 For a local checkout:
 
 ```sh
