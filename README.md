@@ -26,6 +26,20 @@ model. Categories are chosen from a small configurable taxonomy and validated
 locally. The model only proposes the category and the name; the provider owns
 the final format.
 
+## What it does (0.4.0)
+
+- Fixed `DATE | CATEGORY | NAME` template; the date is computed locally, never
+  by the model.
+- Retitles after a completed turn, with a 2-minute cooldown and a 100-message
+  freeze; forks and user-pinned titles are skipped.
+- A failed retitle keeps the current title instead of replacing it with a
+  fallback.
+- **Refresh** button in the conversation header and **重新生成标题** in the
+  session `···` menu (no new dialog).
+- **Hover** a session row for elapsed time, estimated CNY cost, and token count.
+- `categoryPreset: zh | en`, optional startup backfill, and `/retitle`.
+- Pure-host logic plus a small hand-written browser half; no build step.
+
 ## Why
 
 Long-lived workspaces collect dozens of sessions whose titles are either the
