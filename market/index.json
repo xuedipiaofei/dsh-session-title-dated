@@ -28,7 +28,7 @@
   },
   "plugins": [
     {
-      "name": "dsh-session-title-dated",
+      "name": "dsh-session-title-stamp",
       "title": {
         "en": "Dated session titles",
         "zh": "日期分类会话标题"
@@ -39,9 +39,9 @@
       },
       "author": "xuedipiaofei",
       "icon": "../icon.svg",
-      "homepage": "https://github.com/xuedipiaofei/dsh-session-title-dated",
+      "homepage": "https://github.com/xuedipiaofei/dsh-session-title-stamp",
       "repository": {
-        "url": "https://github.com/xuedipiaofei/dsh-session-title-dated"
+        "url": "https://github.com/xuedipiaofei/dsh-session-title-stamp"
       },
       "metadata": {
         "category": "session",
@@ -57,11 +57,11 @@
       },
       "versions": [
         {
-          "version": "0.3.1",
+          "version": "0.4.0",
           "publishTimestamp": 1793366143,
           "source": {
             "type": "git",
-            "url": "https://github.com/xuedipiaofei/dsh-session-title-dated",
+            "url": "https://github.com/xuedipiaofei/dsh-session-title-stamp",
             "commit": "7f3ced8469e90f8704bac9115923f5efcf080855"
           },
           "engines": {

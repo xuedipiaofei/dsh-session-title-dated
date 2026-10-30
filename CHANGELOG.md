@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0 — 2026-10-30
+
+- Renamed the package and repository to `dsh-session-title-stamp`.
+- Reject/ignore the old-name `0.3.1` stage; this is the first release under the new name.
+
 ## 0.3.1 — 2026-10-30
 
 - Add a native Session-row menu item that runs `/retitle` without opening a dialog.

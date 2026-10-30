@@ -11,7 +11,7 @@
 import { readFileSync } from 'node:fs'
 
 const INDEX_URL =
-  'https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.1.0/market/index.json'
+  'https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-stamp@v0.1.0/market/index.json'
 
 const index = JSON.parse(readFileSync(new URL('../market/index.json', import.meta.url), 'utf8'))
 

@@ -1,6 +1,6 @@
 {
-  "name": "dsh-session-title-dated",
-  "version": "0.3.1",
+  "name": "dsh-session-title-stamp",
+  "version": "0.4.0",
   "description": "DSH session titles in a DATE | CATEGORY | NAME template, with turn-aware retitling, a refresh button, and hover cost/duration.",
   "keywords": [
     "dsh",
@@ -14,11 +14,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xuedipiaofei/dsh-session-title-dated.git"
+    "url": "git+https://github.com/xuedipiaofei/dsh-session-title-stamp.git"
   },
-  "homepage": "https://github.com/xuedipiaofei/dsh-session-title-dated#readme",
+  "homepage": "https://github.com/xuedipiaofei/dsh-session-title-stamp#readme",
   "bugs": {
-    "url": "https://github.com/xuedipiaofei/dsh-session-title-dated/issues"
+    "url": "https://github.com/xuedipiaofei/dsh-session-title-stamp/issues"
   },
   "type": "module",
   "main": "lib/index.js",

@@ -22,7 +22,7 @@ globalThis.window = {
 
 await import('../client.js')
 assert.ok(loaded, 'client.js must register through the module loader')
-assert.equal(loaded.id, 'dsh-session-title-dated')
+assert.equal(loaded.id, 'dsh-session-title-stamp')
 const exported = loaded.factory((specifier) => {
   if (specifier === 'react') return React
   throw new Error(`unexpected module ${specifier}`)

@@ -1,11 +1,13 @@
-# Publishing dsh-session-title-dated
+# Publishing dsh-session-title-stamp
 
 This repository is already shaped as a DSH bundle and a format-1 market entry.
 
 ## Current releases
 
-- **0.3.1 (2026-10-30)**: turn/end refresh, backfill, `/retitle`, browser
-  refresh button, and hover cost/duration; publish and tag `v0.3.1`.
+- **0.4.0 (2026-10-30)**: renamed to `dsh-session-title-stamp`; turn/end
+  refresh, backfill, `/retitle`, browser refresh button/menu item, and hover
+  cost/duration. Publish and tag `v0.4.0` under the new name.
+- **0.3.1 (2026-10-30)**: old-name staging only; rejected, never published.
 - **0.2.0 (2026-10-30)**: published on npm, tagged `v0.2.0` on GitHub.
 - **0.1.0 (2026-10-28)**: published on npm, tag `v0.1.0`, listed in the
   community directory (PR #10248 merged).
@@ -14,22 +16,22 @@ This repository is already shaped as a DSH bundle and a format-1 market entry.
 
 | Field | Value |
 |---|---|
-| GitHub owner/repo | `xuedipiaofei/dsh-session-title-dated` |
-| npm package | `dsh-session-title-dated` |
+| GitHub owner/repo | `xuedipiaofei/dsh-session-title-stamp` |
+| npm package | `dsh-session-title-stamp` |
 | License | MIT, copyright `xuedipiaofei` |
 | DSH range | `>=0.2.1-rc.3 <0.3.0` |
 
 If any of these change, update every occurrence with:
 
 ```sh
-grep -R "xuedipiaofei\|dsh-session-title-dated" -n \
+grep -R "xuedipiaofei\|dsh-session-title-stamp" -n \
   package.json cordis.patch.yml market README.md README.zh.md PUBLISHING.md
 ```
 
 ## 0. Prerequisites
 
 - A GitHub account (`xuedipiaofei`) and a public repository named
-  `dsh-session-title-dated`.
+  `dsh-session-title-stamp`.
 - An npm account, logged in on this machine:
 
   ```sh
@@ -43,7 +45,7 @@ grep -R "xuedipiaofei\|dsh-session-title-dated" -n \
 ## 1. Verify the repository
 
 ```sh
-cd ~/Documents/deepseek-harness/default-workspace/dsh-session-title-dated
+cd ~/Documents/deepseek-harness/default-workspace/dsh-session-title-stamp
 npm test
 npm pack --dry-run
 ```
@@ -68,13 +70,13 @@ No `node_modules`, test fixtures, or profile files should appear.
 ## 2. Create and push the GitHub repository
 
 Create an **empty public** repository (no README, no license) at
-<https://github.com/new> with the name `dsh-session-title-dated`, then:
+<https://github.com/new> with the name `dsh-session-title-stamp`, then:
 
 ```sh
 git init -b main
 git add .
 git commit -m "Initial release: dated, categorised DSH session titles"
-git remote add origin git@github.com:xuedipiaofei/dsh-session-title-dated.git
+git remote add origin git@github.com:xuedipiaofei/dsh-session-title-stamp.git
 git push -u origin main
 ```
 
@@ -102,8 +104,8 @@ npm stage publish --access public
 npm stage approve <stage-id>
 
 # 3. Verify
-npm view dsh-session-title-dated version
-npm view dsh-session-title-dated dist.tarball
+npm view dsh-session-title-stamp version
+npm view dsh-session-title-stamp dist.tarball
 ```
 
 A direct `npm publish --access public` is still valid when the account or token
@@ -114,7 +116,7 @@ creating a bypass token.
 
 The repository ships `.github/workflows/publish.yml`. Configure npm **Trusted
 Publishing** for the package (GitHub owner `xuedipiaofei`, repository
-`dsh-session-title-dated`, workflow `publish.yml`), then push a `v*` tag. The
+`dsh-session-title-stamp`, workflow `publish.yml`), then push a `v*` tag. The
 workflow publishes with `--provenance` using GitHub OIDC; no npm token, PAT, or
 2FA prompt is involved.
 
@@ -129,7 +131,7 @@ publish:
 - `cordis.patch.yml` → the inserted `name:`
 - `market/index.json` → `plugins[0].name`
 
-A scoped package (`@your-scope/dsh-session-title-dated`) also needs
+A scoped package (`@your-scope/dsh-session-title-stamp`) also needs
 `"publishConfig": { "access": "public" }` (already present).
 
 npm versions are effectively permanent; do not publish a version you have not
@@ -157,7 +159,7 @@ const index = JSON.parse(fs.readFileSync(file, 'utf8'))
 const version = index.plugins[0].versions[0]
 version.source = {
   type: 'git',
-  url: 'https://github.com/xuedipiaofei/dsh-session-title-dated',
+  url: 'https://github.com/xuedipiaofei/dsh-session-title-stamp',
   commit: process.env.COMMIT,
 }
 version.publishTimestamp = Number(process.env.PUBLISHED)
@@ -191,7 +193,7 @@ Commit and push the index change.
 Use jsDelivr over GitHub (HTTPS, no redirects, no Pages setup):
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.3.1/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-stamp@v0.4.0/market/index.json
 ```
 
 Prefer the tag URL: jsDelivr caches `@main` for a long time, and a cached copy
@@ -200,7 +202,7 @@ was pushed; bump the tag for each release. GitHub Pages also works: enable Pages
 from the repository root and use
 
 ```text
-https://xuedipiaofei.github.io/dsh-session-title-dated/market/index.json
+https://xuedipiaofei.github.io/dsh-session-title-stamp/market/index.json
 ```
 
 DSH refuses index URLs with redirects, credentials, fragments, or queries.
@@ -215,12 +217,12 @@ request starts.
 For a CLI profile:
 
 ```sh
-dsh plugin --profile title-test add dsh-session-title-dated@0.3.0
+dsh plugin --profile title-test add dsh-session-title-stamp@0.3.0
 dsh --profile title-test --dump-config | grep -A8 session-title
 ```
 
 Verify the composed tree disables `session-title-llm` and inserts
-`session-title-dated`. Do **not** enable
+`session-title-stamp`. Do **not** enable
 `@deepseek-ai/dsh-experimental-session-titles-bundle` in the same profile.
 
 ## 6. Submit to the community list
@@ -234,7 +236,7 @@ and the site.
 2. Copy `market/awesome-entry.yml` to:
 
    ```text
-   data/plugins/xuedipiaofei__dsh-session-title-dated.yml
+   data/plugins/xuedipiaofei__dsh-session-title-stamp.yml
    ```
 
 3. Commit only that file and open a pull request.
@@ -251,7 +253,7 @@ and pull request through the GitHub REST API. It also adds the required
 PR is detected instead of duplicated.
 
 ```sh
-cd ~/Documents/deepseek-harness/default-workspace/dsh-session-title-dated
+cd ~/Documents/deepseek-harness/default-workspace/dsh-session-title-stamp
 node scripts/community-pr.mjs --check     # public preflight, no writes
 node scripts/community-pr.mjs --dry-run --force  # show planned calls
 node scripts/community-pr.mjs             # do it
@@ -301,7 +303,7 @@ executor import are version-sensitive.
 - [ ] `npm test` passes
 - [ ] `npm pack --dry-run` lists only intended files
 - [ ] `private` is absent from `package.json`
-- [ ] `repository`/`homepage`/`bugs` point at `xuedipiaofei/dsh-session-title-dated`
+- [ ] `repository`/`homepage`/`bugs` point at `xuedipiaofei/dsh-session-title-stamp`
 - [ ] README links and index URL use the same owner
 - [ ] `assets/icon-180.png` exists (awesome-list icon)
 - [ ] `npm run validate:index` passes with the official validator

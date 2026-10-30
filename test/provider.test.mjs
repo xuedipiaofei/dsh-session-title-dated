@@ -107,7 +107,7 @@ function eligibleEvent(seq = 1) {
   stub.reset()
   const { provider, warnings } = setup({ config: { dateFormat: 'MMDD' } })
   assert.ok(provider, 'apply() must register a provider')
-  assert.equal(provider.id, 'dated-category')
+  assert.equal(provider.id, 'title-stamp')
   assert.equal(provider.automatic, 'first-prompt')
   assert.deepEqual(inject, ['sessionTitle'])
 
@@ -121,7 +121,7 @@ function eligibleEvent(seq = 1) {
   assert.equal(warnings.length, 0)
 
   assert.equal(stub.state.calls.length, 1)
-  assert.equal(stub.state.calls[0].providerId, 'dated-category')
+  assert.equal(stub.state.calls[0].providerId, 'title-stamp')
   assert.deepEqual(stub.state.calls[0].config, {
     maxInputBytes: 4096,
     maxOutputTokens: 4096,

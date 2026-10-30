@@ -1,5 +1,5 @@
 /**
- * Browser half of dsh-session-title-dated.
+ * Browser half of dsh-session-title-stamp.
  *
  * Registers two seats:
  *   - a refresh button in the conversation header
@@ -11,13 +11,13 @@
  * table, so this package has no client build step.
  */
 window.__ModuleLoader__.load({
-  id: 'dsh-session-title-dated',
+  id: 'dsh-session-title-stamp',
   factory(require) {
     const React = require('react')
     const { useEffect, useState } = React
     const h = React.createElement
 
-    const STATS_PATH = '/api/session-title-dated/stats'
+    const STATS_PATH = '/api/session-title-stamp/stats'
     const inject = ['slots', 'remote', 'remote.commands']
 
     function formatDuration(ms) {
@@ -77,7 +77,7 @@ window.__ModuleLoader__.load({
         try {
           await run(sessionId)
         } catch (error) {
-          console.warn('session-title-dated: /retitle failed', error)
+          console.warn('session-title-stamp: /retitle failed', error)
           setFailed(true)
           setTimeout(() => setFailed(false), 2500)
         } finally {
@@ -173,7 +173,7 @@ window.__ModuleLoader__.load({
             try {
               await run(sessionId)
             } catch (error) {
-              console.warn('session-title-dated: /retitle failed', error)
+              console.warn('session-title-stamp: /retitle failed', error)
             }
           },
         },
@@ -182,7 +182,7 @@ window.__ModuleLoader__.load({
       )
     }
 
-    const STYLE_ID = 'dsh-session-title-dated-style'
+    const STYLE_ID = 'dsh-session-title-stamp-style'
 
     function installStyle(ctx) {
       const style = document.createElement('style')
@@ -214,7 +214,7 @@ window.__ModuleLoader__.load({
         ctx.slots.register(
           {
             name: 'conversation.session.header.actions',
-            id: 'session-title-dated-refresh',
+            id: 'session-title-stamp-refresh',
             order: 40,
             inject: () => ({ run }),
           },
@@ -226,7 +226,7 @@ window.__ModuleLoader__.load({
         ctx.slots.register(
           {
             name: 'sidebar.workspaces.session.menu.item',
-            id: 'session-title-dated-retitle',
+            id: 'session-title-stamp-retitle',
             order: 250,
             inject: () => ({ run }),
           },
@@ -238,7 +238,7 @@ window.__ModuleLoader__.load({
         ctx.slots.register(
           {
             name: 'sidebar.session.row.hover',
-            id: 'session-title-dated-stats',
+            id: 'session-title-stamp-stats',
             order: 0,
             inject: () => ({}),
           },

@@ -7,8 +7,8 @@
   disabled: true
 
 - insert:
-    - id: session-title-dated
-      name: dsh-session-title-dated
+    - id: session-title-stamp
+      name: dsh-session-title-stamp
       config:
         # Refresh after a completed turn, at most once every 2 minutes, and
         # stop automatic refreshes after 100 user messages.

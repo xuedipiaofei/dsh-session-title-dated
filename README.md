@@ -1,7 +1,7 @@
-# dsh-session-title-dated
+# dsh-session-title-stamp
 
-[![npm](https://img.shields.io/npm/v/dsh-session-title-dated.svg)](https://www.npmjs.com/package/dsh-session-title-dated)
-[![license](https://img.shields.io/npm/l/dsh-session-title-dated.svg)](./LICENSE)
+[![npm](https://img.shields.io/npm/v/dsh-session-title-stamp.svg)](https://www.npmjs.com/package/dsh-session-title-stamp)
+[![license](https://img.shields.io/npm/l/dsh-session-title-stamp.svg)](./LICENSE)
 [![DSH](https://img.shields.io/badge/DSH-0.2.x-4f46e5.svg)](https://github.com/deepseek-ai/deepseek-harness)
 
 English | [中文](./README.zh.md)
@@ -46,7 +46,7 @@ and mirrors conventions used by other coding agents.
 Add this market index source in **Plugins → Discover → Index sources**:
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.3.1/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-stamp@v0.4.0/market/index.json
 ```
 
 Then install **Dated session titles** from the list. The plugin installs as a
@@ -58,19 +58,19 @@ disabled like any other bundle.
 From GitHub:
 
 ```sh
-dsh plugin --profile <profile> add github:xuedipiaofei/dsh-session-title-dated
+dsh plugin --profile <profile> add github:xuedipiaofei/dsh-session-title-stamp
 ```
 
 From npm:
 
 ```sh
-dsh plugin --profile <profile> add dsh-session-title-dated
+dsh plugin --profile <profile> add dsh-session-title-stamp
 ```
 
 For a local checkout:
 
 ```sh
-dsh plugin --profile <profile> add ./dsh-session-title-dated
+dsh plugin --profile <profile> add ./dsh-session-title-stamp
 ```
 
 The Electron Desktop profile is managed by the application; use its Plugins
@@ -86,7 +86,7 @@ stays inactive instead of failing startup.
 ## How it works
 
 - `cordis.patch.yml` disables `session-title-llm` and inserts the
-  `session-title-dated` row from this package.
+  `session-title-stamp` row from this package.
 - `lib/index.js` registers a provider through `ctx.sessionTitle.register()` and
   reuses `@deepseek-ai/dsh-session-title-llm` for route selection, timeouts,
   cancellation, token limits, and exact auxiliary-request logging.
@@ -149,7 +149,7 @@ route; the refresh button and automatic titles are unaffected.
 Override the row in the profile's `cordis.patch.yml`:
 
 ```yaml
-- id: session-title-dated
+- id: session-title-stamp
   config:
     refreshOnTurnEnd: true
     refreshMinIntervalMs: 120000

@@ -21,12 +21,12 @@ import { homedir } from 'node:os'
 import { join } from 'node:path'
 
 const OWNER = 'xuedipiaofei'
-const REPO = 'dsh-session-title-dated'
+const REPO = 'dsh-session-title-stamp'
 const UPSTREAM_OWNER = 'awesome-dsh-plugin'
 const UPSTREAM_REPO = 'awesome-dsh-plugin'
 const FORK_REPO = 'awesome-dsh-plugin'
-const BRANCH = 'add/xuedipiaofei-dsh-session-title-dated'
-const ENTRY_PATH = 'data/plugins/xuedipiaofei__dsh-session-title-dated.yml'
+const BRANCH = 'add/xuedipiaofei-dsh-session-title-stamp'
+const ENTRY_PATH = 'data/plugins/xuedipiaofei__dsh-session-title-stamp.yml'
 const ENTRY_FILE = new URL('../market/awesome-entry.yml', import.meta.url)
 const API = 'https://api.github.com'
 const DAY_MS = 24 * 60 * 60 * 1000

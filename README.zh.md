@@ -1,4 +1,4 @@
-# dsh-session-title-dated
+# dsh-session-title-stamp
 
 [English](./README.md) | 中文
 
@@ -34,7 +34,7 @@
 在 **插件 → 发现（Discover）→ 索引源** 添加：
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.3.1/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-stamp@v0.4.0/market/index.json
 ```
 
 然后在列表里安装 **Dated session titles / 日期分类会话标题**。插件以 profile bundle 的形式安装，之后可在插件页启停。
@@ -44,19 +44,19 @@ https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.3.1/market/i
 从 GitHub 安装：
 
 ```sh
-dsh plugin --profile <profile> add github:xuedipiaofei/dsh-session-title-dated
+dsh plugin --profile <profile> add github:xuedipiaofei/dsh-session-title-stamp
 ```
 
 从 npm 安装：
 
 ```sh
-dsh plugin --profile <profile> add dsh-session-title-dated
+dsh plugin --profile <profile> add dsh-session-title-stamp
 ```
 
 本地 checkout：
 
 ```sh
-dsh plugin --profile <profile> add ./dsh-session-title-dated
+dsh plugin --profile <profile> add ./dsh-session-title-stamp
 ```
 
 Electron Desktop 的 profile 由应用管理，请在应用的插件页安装，不要用 `dsh plugin --profile desktop`。
@@ -65,7 +65,7 @@ bundle 的 patch 会禁用内置的 `session-title-llm` 行并插入本插件。
 
 ## 实现方式
 
-- `cordis.patch.yml` 关闭 `session-title-llm`，插入本包的 `session-title-dated` 行。
+- `cordis.patch.yml` 关闭 `session-title-llm`，插入本包的 `session-title-stamp` 行。
 - `lib/index.js` 通过 `ctx.sessionTitle.register()` 注册提供者，并复用官方的
   `@deepseek-ai/dsh-session-title-llm` 处理路由、超时、取消、token 上限和请求日志。
 - `client.js` 是手写的浏览器模块：会话头刷新按钮 + 悬停卡片成本/耗时行。
@@ -107,7 +107,7 @@ fork 子会话、子代理会话，以及用户手动改名固定的标题都会
 在 profile 的 `cordis.patch.yml` 里覆盖：
 
 ```yaml
-- id: session-title-dated
+- id: session-title-stamp
   config:
     refreshOnTurnEnd: true
     refreshMinIntervalMs: 120000
