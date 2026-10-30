@@ -4,9 +4,10 @@ This repository is already shaped as a DSH bundle and a format-1 market entry.
 
 ## Current releases
 
-- **0.4.0 (2026-10-30)**: renamed to `dsh-session-title-stamp`; turn/end
-  refresh, backfill, `/retitle`, browser refresh button/menu item, and hover
-  cost/duration. Publish and tag `v0.4.0` under the new name.
+- **0.4.1 (2026-10-30)**: final new-name release; turn/end refresh, backfill,
+  `/retitle`, browser refresh button/menu item, hover cost/duration, and
+  localized menu labels. Publish and tag `v0.4.1`.
+- **0.4.0 (2026-10-30)**: rename/staging only.
 - **0.3.1 (2026-10-30)**: old-name staging only; rejected, never published.
 - **0.2.0 (2026-10-30)**: published on npm, tagged `v0.2.0` on GitHub.
 - **0.1.0 (2026-10-28)**: published on npm, tag `v0.1.0`, listed in the
@@ -193,7 +194,7 @@ Commit and push the index change.
 Use jsDelivr over GitHub (HTTPS, no redirects, no Pages setup):
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-stamp@v0.4.0/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-stamp@v0.4.1/market/index.json
 ```
 
 Prefer the tag URL: jsDelivr caches `@main` for a long time, and a cached copy

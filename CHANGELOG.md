@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.1 — 2026-10-30
+
+- English README labels use "Regenerate title"; client menu label follows the document language.
+- Feature highlights moved to the top of both READMEs.
+
 ## 0.4.0 — 2026-10-30
 
 - Renamed the package and repository to `dsh-session-title-stamp`.
