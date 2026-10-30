@@ -53,6 +53,9 @@ dsh plugin --profile <profile> add github:xuedipiaofei/dsh-session-title-dated
 dsh plugin --profile <profile> add dsh-session-title-dated
 ```
 
+> 0.2.0 已先在 GitHub 打 tag；npm 上可能仍是 0.1.0，直到下一次发布。上面的
+> `v0.2.0` 索引安装的是 GitHub tag 对应的提交。
+
 本地 checkout：
 
 ```sh
