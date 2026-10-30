@@ -4,8 +4,9 @@ This repository is already shaped as a DSH bundle and a format-1 market entry.
 
 ## Current releases
 
+- **0.3.0 (2026-10-30)**: turn/end refresh, backfill, `/retitle`, browser
+  refresh button, and hover cost/duration; publish and tag `v0.3.0`.
 - **0.2.0 (2026-10-30)**: published on npm, tagged `v0.2.0` on GitHub.
-  Installed successfully from npm and from the tag in throwaway profiles.
 - **0.1.0 (2026-10-28)**: published on npm, tag `v0.1.0`, listed in the
   community directory (PR #10248 merged).
 - The community listing points at the repository/npm package, so a version bump
@@ -190,7 +191,7 @@ Commit and push the index change.
 Use jsDelivr over GitHub (HTTPS, no redirects, no Pages setup):
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.2.0/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.3.0/market/index.json
 ```
 
 Prefer the tag URL: jsDelivr caches `@main` for a long time, and a cached copy
@@ -214,7 +215,7 @@ request starts.
 For a CLI profile:
 
 ```sh
-dsh plugin --profile title-test add dsh-session-title-dated@0.2.0
+dsh plugin --profile title-test add dsh-session-title-dated@0.3.0
 dsh --profile title-test --dump-config | grep -A8 session-title
 ```
 

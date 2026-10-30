@@ -1,7 +1,7 @@
 {
   "name": "dsh-session-title-dated",
-  "version": "0.2.0",
-  "description": "DSH session titles in a DATE | CATEGORY | NAME template, retitled periodically from the session model with a deterministic fallback.",
+  "version": "0.3.0",
+  "description": "DSH session titles in a DATE | CATEGORY | NAME template, with turn-aware retitling, a refresh button, and hover cost/duration.",
   "keywords": [
     "dsh",
     "dsh-plugin",
@@ -24,10 +24,12 @@
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./client": "./client.js"
   },
   "files": [
     "lib",
+    "client.js",
     "cordis.patch.yml",
     "market/index.json",
     "icon.svg",
@@ -43,6 +45,15 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-workspace",
+        "@deepseek-ai/dsh-client-ui-renderer"
+      ]
     }
   },
   "icon": "./icon.svg",
@@ -50,7 +61,7 @@
     "access": "public"
   },
   "scripts": {
-    "test": "node test/format.test.mjs && node test/provider.test.mjs && node scripts/check.mjs",
+    "test": "node --check client.js && node test/format.test.mjs && node test/provider.test.mjs && node test/client.test.mjs && node scripts/check.mjs",
     "check": "node scripts/check.mjs",
     "validate:index": "node scripts/validate-index.mjs",
     "pack:check": "npm pack --dry-run"

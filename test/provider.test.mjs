@@ -198,30 +198,81 @@ function eligibleEvent(seq = 1) {
   assert.match(result.title, /^旧标题 \| 分析 \| 2610$/u)
 }
 
-// 8. Retitle every N messages, skip forks and pinned titles.
+function turnEndEvent() {
+  return { type: 'turn/end', seq: 99, data: { reason: { kind: 'completed' } } }
+}
+
+// 8. turn/end refreshes after a completed turn, skips a cooldown, freezes a
+// long session, and ignores forks.
 {
-  const { handlers, refreshCount } = setup({ config: { retitleEvery: 10 }, llm: false })
+  const { handlers, refreshCount } = setup({
+    config: { refreshOnTurnEnd: true, refreshMinIntervalMs: 0, refreshMaxTurns: 0 },
+    llm: false,
+  })
   const onEvent = handlers.get('session/event')
   assert.equal(typeof onEvent, 'function')
-  const session = { id: 'counter-session', header: { parentSession: undefined } }
-  for (let seq = 1; seq <= 9; seq += 1) onEvent(session, eligibleEvent(seq))
+  const session = { id: 'turn-session', header: { parentSession: undefined } }
+  onEvent(session, eligibleEvent(1))
   assert.equal(refreshCount(), 0)
-  onEvent(session, eligibleEvent(10))
+  onEvent(session, turnEndEvent())
   assert.equal(refreshCount(), 1)
-  for (let seq = 11; seq <= 19; seq += 1) onEvent(session, eligibleEvent(seq))
-  assert.equal(refreshCount(), 1)
-  onEvent(session, eligibleEvent(20))
+  onEvent(session, eligibleEvent(2))
+  onEvent(session, turnEndEvent())
   assert.equal(refreshCount(), 2)
 
-  // The fork does not increment or refresh.
-  onEvent({ id: 'fork', header: { parentSession: 'parent' } }, eligibleEvent(1))
+  // A non-completed end does not refresh.
+  onEvent(session, { type: 'turn/end', data: { reason: { kind: 'error' } } })
+  assert.equal(refreshCount(), 2)
+
+  // A fork never refreshes.
+  onEvent(
+    { id: 'fork', header: { parentSession: 'parent' } },
+    { type: 'turn/end', data: { reason: { kind: 'completed' } } },
+  )
   assert.equal(refreshCount(), 2)
 }
 
-// 9. retitleEvery=0 registers no event handler.
+// 9. The cooldown suppresses a second refresh inside the window.
 {
-  const { handlers } = setup({ config: { retitleEvery: 0 }, llm: false })
-  assert.equal(handlers.has('session/event'), false)
+  const { handlers, refreshCount } = setup({
+    config: { refreshOnTurnEnd: true, refreshMinIntervalMs: 120000, refreshMaxTurns: 0 },
+    llm: false,
+  })
+  const onEvent = handlers.get('session/event')
+  const session = { id: 'cooldown', header: { parentSession: undefined } }
+  onEvent(session, eligibleEvent(1))
+  onEvent(session, turnEndEvent())
+  assert.equal(refreshCount(), 1)
+  onEvent(session, eligibleEvent(2))
+  onEvent(session, turnEndEvent())
+  assert.equal(refreshCount(), 1)
+}
+
+// 10. Over the freeze threshold, turn/end stops refreshing.
+{
+  const { handlers, refreshCount } = setup({
+    config: { refreshOnTurnEnd: true, refreshMinIntervalMs: 0, refreshMaxTurns: 2 },
+    llm: false,
+  })
+  const onEvent = handlers.get('session/event')
+  const session = { id: 'frozen', header: { parentSession: undefined } }
+  for (let seq = 1; seq <= 3; seq += 1) onEvent(session, eligibleEvent(seq))
+  onEvent(session, turnEndEvent())
+  assert.equal(refreshCount(), 0)
+}
+
+// 11. Legacy message-count mode is used only when turn/end is disabled.
+{
+  const { handlers, refreshCount } = setup({
+    config: { refreshOnTurnEnd: false, retitleEvery: 2 },
+    llm: false,
+  })
+  const onEvent = handlers.get('session/event')
+  const session = { id: 'legacy', header: { parentSession: undefined } }
+  onEvent(session, eligibleEvent(1))
+  onEvent(session, eligibleEvent(2))
+  onEvent(session, turnEndEvent())
+  assert.equal(refreshCount(), 1)
 }
 
 // 10. Another provider already registered: stay inactive, do not throw.
@@ -232,17 +283,17 @@ function eligibleEvent(seq = 1) {
   assert.equal(handlers.has('session/event'), false)
 }
 
-// 11. A pinned user title suppresses refresh.
+// 12. A pinned user title suppresses refresh.
 {
   const { handlers, refreshCount } = setup({
-    config: { retitleEvery: 2 },
+    config: { refreshOnTurnEnd: true, refreshMinIntervalMs: 0 },
     llm: false,
     titleSource: 'user',
   })
   const onEvent = handlers.get('session/event')
   const session = { id: 'pinned', header: { parentSession: undefined } }
   onEvent(session, eligibleEvent(1))
-  onEvent(session, eligibleEvent(2))
+  onEvent(session, turnEndEvent())
   assert.equal(refreshCount(), 0)
 }
 

@@ -34,7 +34,7 @@
 在 **插件 → 发现（Discover）→ 索引源** 添加：
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.2.0/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.3.0/market/index.json
 ```
 
 然后在列表里安装 **Dated session titles / 日期分类会话标题**。插件以 profile bundle 的形式安装，之后可在插件页启停。
@@ -68,16 +68,31 @@ bundle 的 patch 会禁用内置的 `session-title-llm` 行并插入本插件。
 - `cordis.patch.yml` 关闭 `session-title-llm`，插入本包的 `session-title-dated` 行。
 - `lib/index.js` 通过 `ctx.sessionTitle.register()` 注册提供者，并复用官方的
   `@deepseek-ai/dsh-session-title-llm` 处理路由、超时、取消、token 上限和请求日志。
-- `lib/format.js` 无依赖：本地时区日期、模板渲染、分类校验、名称清洗、按 UTF-8 字节截断。
+- `client.js` 是手写的浏览器模块：会话头刷新按钮 + 悬停卡片成本/耗时行。
 
 插件从 `session.header.createdAt` 按**本机时区**计算日期，让模型返回
 `{"category":"...","name":"..."}`，校验分类，再按模板拼装。`{type}` 或 `{topic}` 为空时，相邻分隔符会一起消失，不会留下 `||`。
 
 ### 重算节奏
 
-provider 注册为 `first-prompt`，首条消息由标题服务自动命名。之后插件自己数合格的人类消息，每满 `retitleEvery` 条（默认 **10**）调用一次 `ctx.sessionTitle.refresh()`。它不会每条消息都调模型，也不会写重复的标题事件。fork 会话和用户手动固定的标题会跳过。
+provider 注册为 `first-prompt`，首条消息由标题服务自动命名。之后插件在**每次 turn/end（回答完成）**时判断，并有两道闸：
 
-`retitleEvery: 0` 表示只在首条消息时命名一次，之后不自动更新。旧的 `cadence: first-prompt` / `all-prompts` 仍兼容，分别映射到 `0` / `1`。
+- **冷却**：距上次自动刷新不足 `refreshMinIntervalMs`（默认 2 分钟）就跳过；
+- **冻结**：用户消息数超过 `refreshMaxTurns`（默认 100）后停止自动刷新；`/retitle` 仍可用。
+
+fork 子会话、子代理会话，以及用户手动改名固定的标题都会跳过。`refreshOnTurnEnd: false` 时回退到旧的「每 N 条消息」模式（`retitleEvery`）。
+
+### 会话头按钮与悬停统计
+
+0.3.0 增加了一个很小的浏览器半边：
+
+- 会话头有一个**刷新图标**，效果等同输入 `/retitle`，会话运行中禁用；
+- 鼠标悬停会话行时，在原生相对时间下面多一行：
+  `耗时 1h 51m · 估算 ≈¥4.11 · 131.7M tokens`。
+
+数字来自 `sessionStats` / `tokenUsage` 投影，按 DeepSeek 当前 CNY 价格估算，并标注「估算」。只在悬停时向宿主请求，不会为了显示数字去恢复未加载的会话。DSH 原生已经有运行中/待交互/完成未读的状态点与 loader，所以本插件**不再加一层状态颜色**。
+
+如果悬停行不显示，说明浏览器半边没连上宿主统计路由；刷新按钮和自动标题不受影响。
 
 ### 失败时
 
@@ -92,28 +107,29 @@ provider 注册为 `first-prompt`，首条消息由标题服务自动命名。�
 ```yaml
 - id: session-title-dated
   config:
-    retitleEvery: 10
-    template: '{MMDD} | {type} | {topic}'
+    refreshOnTurnEnd: true
+    refreshMinIntervalMs: 120000
+    refreshMaxTurns: 100
+    categoryPreset: zh
+    template: '{date} | {type} | {topic}'
     timeZone: Asia/Shanghai
-    categories:
-      - 分析
-      - 实现
-      - 整改
-      - 排查
-      - 验收
-      - 部署
-      - 文档
-      - 其他
     maxNameChars: 20
 ```
 
 | 字段 | 默认 | 说明 |
 |---|---|---|
-| `retitleEvery` | `10` | 每 N 条合格用户消息重算一次；`0` 表示只在首条消息时命名 |
+| `refreshOnTurnEnd` | `true` | 回答完成后刷新；`false` 时回退到 `retitleEvery` |
+| `refreshMinIntervalMs` | `120000` | 自动刷新最小间隔；`0` 关闭冷却 |
+| `refreshMaxTurns` | `100` | 超过多少条用户消息后冻结自动刷新；`0` 不冻结 |
+| `retitleEvery` | `10` | 旧的按消息条数模式，仅在 `refreshOnTurnEnd: false` 时使用 |
+| `backfillOnStart` | `false` | 启动时对仍是 fallback 标题的 live 会话逐个补刷 |
+| `backfillMaxSessions` | `30` | 单次回填最多处理多少个会话 |
+| `backfillIntervalMs` | `2000` | 回填两次刷新之间的间隔 |
 | `template` | `{date} \| {type} \| {topic}` | 标题模板，占位符见下 |
 | `dateFormat` | `MMDD` | `{date}` 使用：`MMDD`（`1028`）/ `YYMM`（`2610`）/ `YYYYMMDD` |
 | `timeZone` | 本机时区 | 日期/时间占位符使用的 IANA 时区 |
-| `categories` | 内置中文 8 类 | 模型可选分类，也用于本地兜底分类 |
+| `categoryPreset` | `zh` | 内置分类语言：`zh` 或 `en` |
+| `categories` | 预设 | 显式分类词表，优先级高于 `categoryPreset` |
 | `maxNameChars` | `20` | 名称字符上限（最终还受字节上限约束） |
 | `maxTitleBytes` | 标题服务上限（`80`） | 实际取它与 `session-title` 的较小值 |
 | `recentMessages` | `8` | 发送首条消息 + 最近 N 条消息 |
@@ -133,20 +149,23 @@ provider 注册为 `first-prompt`，首条消息由标题服务自动命名。�
 
 不认识的占位符会**原样保留**（`{MMDD} {bogus}` 会保留 `{bogus}`），方便一眼看出模板写错，而不是悄悄消失。最终仍受 `maxTitleBytes` 截断。
 
-默认分类是中文。需要英文或其它领域词表时直接替换 `categories`；提示词会使用配置的标签，本地兜底也会把常见中英文关键词映射到这些标签。
+默认分类是中文。`categoryPreset: en` 可切到
+`Analysis / Build / Fix / Debug / QA / Deploy / Docs / Other`；`categories`
+可以覆盖任意预设。提示词使用配置的标签，本地兜底也会把常见中英文关键词映射过去。
 
 ## 隐私与成本
 
 - 发送首条有效用户消息，加上最多 `recentMessages - 1` 条最近消息。消息以 JSON 包裹，避免用户文本破坏分隔符。
 - 请求使用会话当前的 provider/model，或可选的 `provider`/`model` 覆盖。插件没有其它网络请求，也不收集遥测。
-- 首条标题一次辅助请求，之后每 `retitleEvery` 条消息一次。标题生成是异步的，不会阻塞主回复；`maxOutputTokens`、`maxInputBytes`、`timeoutMs` 都会约束它。
+- 首条标题一次辅助请求，之后每个完成的 turn 最多一次（受冷却/冻结约束）。标题生成是异步的，不会阻塞主回复；`maxOutputTokens`、`maxInputBytes`、`timeoutMs` 都会约束它。
 - 标题作为普通 `session/title` 事件写入会话日志。用户手动重命名后标题会被固定，后续自动命名不会覆盖。
 
 ## 兼容性
 
 - 本包面向 DSH 0.2 线；`engines.dsh` 会在 0.3+ 上拒绝安装，直到按新 API 更新。
 - bundle 依赖内置行 id `session-title-llm`。如果已有其它标题 provider 先注册，本插件会打 warn 并保持 inactive；先停用另一个再重载。
-- `llm` 采用延迟注入：组合里没有 LLM 服务时插件仍能加载，只是退回本地命名。
+- `llm`、`commands`、`sessions`、`sessionProjections`、`connection` 都采用延迟注入；缺少哪个只损失对应能力，不影响插件加载。
+- 浏览器半边依赖 Web 组合的 `sidebar.session.row.hover` 和 `conversation.session.header.actions` 座位；没有这两个座位的 shell 不会显示按钮/悬停行。
 - 插件动态 import `@deepseek-ai/dsh-session-title-llm`。执行器缺失或不兼容时会降级为本地命名；如果 `ctx.sessionTitle` API 本身变化，则可能无法注册。
 
 ## 开发

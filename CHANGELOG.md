@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.0 — 2026-10-30
+
+- Turn-aware refresh: react to completed `turn/end` events instead of counting
+  every N messages, with a 2-minute cooldown and a 100-message freeze.
+- Optional startup backfill for live sessions whose title is still the fallback.
+- `/retitle` host command for an immediate, cooldown-free refresh.
+- Browser half: a conversation-header refresh button and a Session-hover line
+  with estimated cost, duration, and token count.
+- `categoryPreset: zh | en` built-in taxonomies; `categories` still overrides.
+- Native DSH status indicators are reused instead of adding a duplicate color
+  layer.
+- `refreshOnTurnEnd: false` keeps the legacy `retitleEvery` message cadence.
+
 ## 0.2.0 — 2026-10-30
 
 - Retitle every N user messages (`retitleEvery`, default 10) through

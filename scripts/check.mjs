@@ -21,10 +21,14 @@ assert.ok(pkg.keywords?.includes('dsh-plugin'), 'keywords should include dsh-plu
 assert.equal(pkg.dsh?.bundle?.patch, './cordis.patch.yml', 'dsh.bundle.patch must point at the bundle patch')
 assert.match(pkg.engines?.dsh ?? '', /^\S+/, 'engines.dsh is required')
 assert.equal(pkg.icon, './icon.svg', 'icon should point at the packaged SVG')
+assert.equal(pkg.exports?.['./client'], './client.js', 'client entry must be exported')
+assert.equal(pkg.dsh?.client?.platform, 'web', 'browser half must target the web platform')
+assert.ok(Array.isArray(pkg.dsh?.client?.inject), 'browser half should declare its module dependencies')
 
 for (const required of [
   'lib/index.js',
   'lib/format.js',
+  'client.js',
   'cordis.patch.yml',
   'market/index.json',
   'icon.svg',

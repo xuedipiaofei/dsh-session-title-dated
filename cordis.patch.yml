@@ -10,9 +10,12 @@
     - id: session-title-dated
       name: dsh-session-title-dated
       config:
-        # 0 = title once on the first message; 10 = refresh every 10 human
-        # messages. The provider itself never calls the model on every turn.
-        retitleEvery: 10
+        # Refresh after a completed turn, at most once every 2 minutes, and
+        # stop automatic refreshes after 100 user messages.
+        refreshOnTurnEnd: true
+        refreshMinIntervalMs: 120000
+        refreshMaxTurns: 100
+        categoryPreset: zh
         # MMDD matches the reference list (1027). The template can also use
         # {YYYYMMDD}, {YYMM}, {HHmm}, {type}, {topic}, etc.
         dateFormat: MMDD
@@ -20,3 +23,7 @@
         maxInputBytes: 4096
         maxOutputTokens: 4096
         timeoutMs: 90000
+        # Optional: repair fallback titles of live sessions on startup.
+        backfillOnStart: false
+        backfillMaxSessions: 30
+        backfillIntervalMs: 2000

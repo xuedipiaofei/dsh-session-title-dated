@@ -46,7 +46,7 @@ and mirrors conventions used by other coding agents.
 Add this market index source in **Plugins → Discover → Index sources**:
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.2.0/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.3.0/market/index.json
 ```
 
 Then install **Dated session titles** from the list. The plugin installs as a
@@ -101,14 +101,37 @@ remove their neighbouring separator instead of leaving `||`.
 ### Retitle cadence
 
 The provider is registered as `first-prompt`, so the title service names the
-session once. After that, the plugin counts eligible user messages and calls
-`ctx.sessionTitle.refresh()` every `retitleEvery` messages (default **10**). It
-does not call the model on every turn, and it writes no duplicate title events.
-Forks and user-pinned titles are skipped.
+session once. After that, the plugin refreshes on a completed turn (`turn/end`)
+with two guards:
 
-Set `retitleEvery: 0` to name once and never retitle automatically. The old
-`cadence: first-prompt` / `all-prompts` values still work for compatibility and
-map to `0` / `1`.
+- **cooldown** — at most one automatic refresh every `refreshMinIntervalMs`
+  (default 2 minutes), so a fast first answer does not generate twice;
+- **freeze** — after `refreshMaxTurns` user messages (default 100), automatic
+  refresh stops; long sessions rarely change their main topic. `/retitle`
+  still works.
+
+Forks and subagent sessions are skipped, as are titles pinned by a manual
+rename. Setting `refreshOnTurnEnd: false` restores the legacy message-count
+mode using `retitleEvery`.
+
+### Header refresh and hover stats
+
+0.3.0 adds a small browser half:
+
+- a **refresh icon** in the conversation header; it runs the same `/retitle`
+  command as typing it, and is disabled while the session is running.
+- a **hover-card line** under the native relative time, for example
+  `耗时 1h 51m · 估算 ≈¥4.11 · 131.7M tokens`.
+
+The hover line is derived from the `sessionStats` and `tokenUsage` projections,
+priced with the current DeepSeek CNY rate table, and labelled as an estimate.
+It is fetched from the host only when the hover card opens; a session that was
+never loaded is not resumed just to show the numbers. Native DSH already shows
+running / pending / completed-unread status (spinner, warning dot, idle line),
+so this plugin does **not** add a second status-color layer.
+
+If the hover line is missing, the browser half could not reach the host stats
+route; the refresh button and automatic titles are unaffected.
 
 ### Failures
 
@@ -126,28 +149,29 @@ Override the row in the profile's `cordis.patch.yml`:
 ```yaml
 - id: session-title-dated
   config:
-    retitleEvery: 10
-    template: '{MMDD} | {type} | {topic}'
+    refreshOnTurnEnd: true
+    refreshMinIntervalMs: 120000
+    refreshMaxTurns: 100
+    categoryPreset: zh
+    template: '{date} | {type} | {topic}'
     timeZone: Asia/Shanghai
-    categories:
-      - Analysis
-      - Build
-      - Fix
-      - Debug
-      - QA
-      - Deploy
-      - Docs
-      - Other
     maxNameChars: 20
 ```
 
 | Field | Default | Meaning |
 |---|---|---|
-| `retitleEvery` | `10` | Refresh after every N eligible user messages. `0` = only the first title |
+| `refreshOnTurnEnd` | `true` | Refresh after a completed turn; `false` falls back to `retitleEvery` |
+| `refreshMinIntervalMs` | `120000` | Minimum gap between automatic refreshes; `0` disables the cooldown |
+| `refreshMaxTurns` | `100` | Stop automatic refresh after this many user messages; `0` = no freeze |
+| `retitleEvery` | `10` | Legacy message-count cadence, used only when `refreshOnTurnEnd: false` |
+| `backfillOnStart` | `false` | On startup, refresh live sessions whose title is still the fallback |
+| `backfillMaxSessions` | `30` | Maximum sessions in one backfill pass |
+| `backfillIntervalMs` | `2000` | Delay between backfill refreshes |
 | `template` | `{date} \| {type} \| {topic}` | Title template; see the placeholders below |
 | `dateFormat` | `MMDD` | Used by `{date}`: `MMDD` (`1028`), `YYMM` (`2610`), or `YYYYMMDD` |
 | `timeZone` | host local | IANA zone used for date/time placeholders |
-| `categories` | Chinese 8-item set | Categories the model may choose; also used by the local classifier |
+| `categoryPreset` | `zh` | Built-in category language: `zh` or `en` |
+| `categories` | preset | Explicit category list; overrides `categoryPreset` |
 | `maxNameChars` | `20` | Character cap before the byte cap applies |
 | `maxTitleBytes` | service cap (`80`) | Effective cap is the smaller of this and `session-title`'s cap |
 | `recentMessages` | `8` | First message plus this many recent messages are sent |
@@ -169,9 +193,10 @@ An unknown placeholder is left verbatim (`{MMDD} {bogus}` keeps `{bogus}`), so a
 typo is visible instead of silently disappearing. The template owns the final
 format; `maxTitleBytes` still clips the result.
 
-The default taxonomy is Chinese. Supply `categories` to use any other language
-or domain; the prompt lists the configured labels and the local fallback maps
-common English and Chinese keywords onto them.
+The default taxonomy is Chinese. `categoryPreset: en` switches it to
+`Analysis / Build / Fix / Debug / QA / Deploy / Docs / Other`; `categories`
+overrides either preset with any labels you want. The prompt lists the configured
+labels and the local fallback maps common keywords onto them.
 
 ## Privacy and cost
 
@@ -181,9 +206,10 @@ common English and Chinese keywords onto them.
 - The request uses the session's configured provider/model, or the optional
   `provider`/`model` override. The plugin makes no other network calls and
   collects no telemetry.
-- One auxiliary request is made for the first title, then one every
-  `retitleEvery` messages. Title work is asynchronous and never delays the main
-  agent response; `maxOutputTokens`, `maxInputBytes`, and `timeoutMs` bound it.
+- One auxiliary request is made for the first title, then at most one per
+  completed turn inside the cooldown, and none after the freeze threshold.
+  Title work is asynchronous and never delays the main agent response;
+  `maxOutputTokens`, `maxInputBytes`, and `timeoutMs` bound it.
 - The resulting title is stored in the session log as a normal `session/title`
   event. A manual rename pins the title and later automatic revisions do not
   overwrite it.
@@ -195,8 +221,12 @@ common English and Chinese keywords onto them.
 - The bundle assumes the shipped row id `session-title-llm`. If another title
   provider is registered first, this plugin logs and stays inactive; disable the
   other provider and reload.
-- `llm` is awaited lazily, so a composition without the LLM service still loads
-  the plugin and falls back to local naming.
+- `llm`, `commands`, `sessions`, `sessionProjections`, and `connection` are
+  awaited lazily; a composition without one still loads the plugin and degrades
+  only the affected feature.
+- The browser half needs the Web composition's `sidebar.session.row.hover` and
+  `conversation.session.header.actions` seats. A shell that does not expose them
+  simply shows no button/hover line.
 - The provider imports `@deepseek-ai/dsh-session-title-llm` dynamically. A
   missing or incompatible executor degrades to local naming, but a changed
   `ctx.sessionTitle` API can prevent registration. Pin the DSH range when
