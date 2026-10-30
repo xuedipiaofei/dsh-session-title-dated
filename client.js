@@ -177,7 +177,11 @@ window.__ModuleLoader__.load({
             }
           },
         },
-        h('span', { className: 'dsh-title-menu-icon', 'aria-hidden': 'true' }, '↻'),
+        h(
+          'span',
+          { className: 'dsh-title-menu-icon', 'aria-hidden': 'true' },
+          h(RefreshIcon),
+        ),
         h('span', null, '重新生成标题'),
       )
     }
@@ -188,9 +192,11 @@ window.__ModuleLoader__.load({
       const style = document.createElement('style')
       style.id = STYLE_ID
       style.textContent = `
-.dsh-title-menu-item{display:flex;align-items:center;gap:8px;width:100%;padding:6px 10px;border:0;border-radius:6px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
-.dsh-title-menu-item:hover{background:var(--dsw-alias-interactive-bg-hover,rgba(255,255,255,.06))}
-.dsh-title-menu-icon{width:16px;text-align:center;color:var(--dsw-alias-label-tertiary,#94a3b8)}
+.dsh-title-menu-item{display:flex;align-items:center;gap:6px;width:100%;min-height:34px;padding:6px 8px;border:0;border-radius:var(--dsw-radius-md);background:transparent;color:var(--dsw-alias-label-primary);font-family:inherit;font-size:13px;line-height:20px;font-weight:400;text-align:left;cursor:pointer;box-sizing:border-box}
+.dsh-title-menu-item:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover,rgba(255,255,255,.06))}
+.dsh-title-menu-icon{display:inline-flex;flex:none;width:14px;height:14px;align-items:center;justify-content:center;color:var(--dsw-alias-menu-icon,var(--dsw-alias-label-tertiary,#94a3b8))}
+.dsh-title-menu-icon svg{width:14px;height:14px}
+.dsh-title-menu-item > span:last-child{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 `
       document.head.appendChild(style)
       ctx.effect?.(() => () => style.remove())
@@ -227,7 +233,7 @@ window.__ModuleLoader__.load({
           {
             name: 'sidebar.workspaces.session.menu.item',
             id: 'session-title-stamp-retitle',
-            order: 250,
+            order: 0,
             inject: () => ({ run }),
           },
           RegenerateMenuItem,
