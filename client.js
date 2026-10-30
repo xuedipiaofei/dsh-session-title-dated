@@ -19,6 +19,24 @@ window.__ModuleLoader__.load({
 
     const STATS_PATH = '/api/session-title-stamp/stats'
     const inject = ['slots', 'remote', 'remote.commands']
+    const isZh = (document.documentElement.lang || navigator.language || '')
+      .toLowerCase()
+      .startsWith('zh')
+    const LABELS = isZh
+      ? {
+          menu: '重新生成标题',
+          header: '重新生成标题',
+          running: '会话运行中，稍后再试',
+          duration: '耗时',
+          estimate: '估算',
+        }
+      : {
+          menu: 'Regenerate title',
+          header: 'Regenerate title',
+          running: 'Session is running; try again later',
+          duration: 'Duration',
+          estimate: 'est.',
+        }
 
     function formatDuration(ms) {
       if (typeof ms !== 'number' || !Number.isFinite(ms) || ms < 0) return undefined
@@ -91,8 +109,8 @@ window.__ModuleLoader__.load({
           type: 'button',
           className: 'dsh-title-refresh',
           disabled,
-          title: running ? '会话运行中，稍后再试' : '重新生成标题',
-          'aria-label': '重新生成标题',
+          title: running ? LABELS.running : LABELS.header,
+          'aria-label': LABELS.header,
           onClick: click,
           style: {
             display: 'inline-flex',
@@ -137,8 +155,8 @@ window.__ModuleLoader__.load({
       const cost = formatCost(data.costCny)
       const tokens = formatTokens(data.tokens)
       const parts = [
-        duration === undefined ? undefined : `耗时 ${duration}`,
-        cost === undefined ? undefined : `估算 ${cost}`,
+        duration === undefined ? undefined : `${LABELS.duration} ${duration}`,
+        cost === undefined ? undefined : `${LABELS.estimate} ${cost}`,
         tokens === undefined ? undefined : `${tokens} tokens`,
       ].filter(Boolean)
       if (parts.length === 0) return null
@@ -182,7 +200,7 @@ window.__ModuleLoader__.load({
           { className: 'dsh-title-menu-icon', 'aria-hidden': 'true' },
           h(RefreshIcon),
         ),
-        h('span', null, '重新生成标题'),
+        h('span', null, LABELS.menu),
       )
     }
 

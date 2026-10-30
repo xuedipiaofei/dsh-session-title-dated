@@ -12,7 +12,7 @@ title. Beyond automatic naming:
 - **Auto refresh** — after a completed turn, with a 2-minute cooldown and a
   100-message freeze; forks and user-pinned titles are skipped.
 - **Manual refresh** — the conversation-header ↻ button, the session row's
-  `重新生成标题` menu item, or `/retitle`.
+  **Regenerate title** menu item, or `/retitle`.
 - **Hover stats** — elapsed time, estimated CNY cost, and token count on the
   session hover card.
 - **Category language** — `categoryPreset: zh | en`, or your own `categories`.
@@ -25,18 +25,19 @@ Default format:
 DATE | CATEGORY | NAME
 ```
 
-For example:
+For example, with `categoryPreset: en`:
 
 ```text
-1028 | 分析 | 绿洲短剧平台验证
-1027 | 整改 | 四台设备第十题验收返修
-1026 | 部署 | Ubuntu 环境初始化
+1028 | Analysis | Short-drama platform verification
+1027 | Fix | Four-device acceptance rework
+1026 | Deploy | Ubuntu environment setup
 ```
 
 Dates are computed by the plugin from the session's creation time, never by the
 model. Categories are chosen from a small configurable taxonomy and validated
 locally. The model only proposes the category and the name; the provider owns
-the final format.
+the final format. The default taxonomy is Chinese; set `categoryPreset: en` for
+the English labels above.
 
 ## Why
 
@@ -128,14 +129,14 @@ mode using `retitleEvery`.
 
 ### Header refresh and hover stats
 
-0.3.0 adds a small browser half:
+0.4.0 adds a small browser half:
 
 - a **refresh icon** in the conversation header; it runs the same `/retitle`
   command as typing it, and is disabled while the session is running.
 - a **hover-card line** under the native relative time, for example
-  `耗时 1h 51m · 估算 ≈¥4.11 · 131.7M tokens`;
-- a **`重新生成标题` item** in the session row's `···` menu, placed under the
-  shipped Rename item. It runs the same `/retitle` command and adds no dialog.
+  `Duration 1h 51m · est. ≈¥4.11 · 131.7M tokens`;
+- a **Regenerate title** item at the top of the session row's `···` menu. It
+  runs the same `/retitle` command and adds no dialog.
 
 The hover line is derived from the `sessionStats` and `tokenUsage` projections,
 priced with the current DeepSeek CNY rate table, and labelled as an estimate.

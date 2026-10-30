@@ -7,6 +7,7 @@ const React = {
   useEffect: () => {},
 }
 globalThis.document = {
+  documentElement: { lang: 'zh-CN' },
   head: { appendChild() {} },
   createElement() {
     return { id: '', textContent: '', remove() {} }
