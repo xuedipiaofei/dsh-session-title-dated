@@ -30,12 +30,12 @@
     {
       "name": "dsh-session-title-stamp",
       "title": {
-        "en": "Dated session titles",
-        "zh": "日期分类会话标题"
+        "en": "Session title stamp",
+        "zh": "会话标题印章"
       },
       "description": {
-        "en": "Names every new session DATE | CATEGORY | NAME with the session model and a deterministic local fallback.",
-        "zh": "用「日期 | 分类 | 名称」自动命名新会话，模型不可用时本地降级。"
+        "en": "Keeps DSH session titles in DATE | CATEGORY | NAME with turn-aware auto-retitle, manual refresh, and hover cost/duration.",
+        "zh": "把 DSH 会话标题固定为「日期 | 分类 | 名称」，支持回答后自动重算、手动刷新和悬停成本/耗时。"
       },
       "author": "xuedipiaofei",
       "icon": "../icon.svg",
