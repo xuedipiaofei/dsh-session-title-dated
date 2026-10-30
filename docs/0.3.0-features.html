@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #0b1220; }
+  body {
+    font-family: "PingFang SC", "Hiragino Sans GB", "Helvetica Neue", Arial, sans-serif;
+    color: #e2e8f0;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { width: 1800px; padding: 46px 52px 34px; }
+  header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 26px; }
+  h1 { font-size: 44px; line-height: 1.15; margin: 0; letter-spacing: 0.5px; }
+  h1 span { color: #38bdf8; }
+  .sub { color: #94a3b8; font-size: 20px; margin-top: 10px; }
+  .badge { display: inline-block; font-size: 15px; color: #7dd3fc; border: 1px solid #1e3a5f; background: #0f1b33; border-radius: 999px; padding: 6px 14px; }
+  .panel { background: #111c33; border: 1px solid #24324a; border-radius: 22px; padding: 24px 28px; }
+  .panel h2 { font-size: 26px; margin: 0 0 4px; }
+  .panel h2 b { color: #38bdf8; font-weight: 700; margin-right: 10px; }
+  .hint { color: #94a3b8; font-size: 18px; margin: 4px 0 18px; }
+  .timeline { margin-bottom: 22px; }
+  .lane { display: flex; align-items: stretch; margin-top: 14px; }
+  .lane-tag { width: 132px; flex: none; font-size: 18px; color: #94a3b8; padding-top: 10px; }
+  .lane-tag b { display: block; color: #e2e8f0; font-size: 20px; }
+  .track { position: relative; flex: 1; height: 118px; border-top: 2px solid #26344d; margin-top: 24px; }
+  .event { position: absolute; top: -15px; width: 300px; transform: translateX(-50%); text-align: center; }
+  .dot { width: 18px; height: 18px; border-radius: 50%; margin: 0 auto; background: #475569; border: 4px solid #111c33; box-shadow: 0 0 0 2px #475569; }
+  .event .when { font-size: 15px; color: #94a3b8; margin-top: 10px; }
+  .event .what { font-size: 18px; margin-top: 4px; line-height: 1.3; }
+  .event.bad .dot { background: #fbbf24; box-shadow: 0 0 0 2px #fbbf24; }
+  .event.bad .what { color: #fbbf24; }
+  .event.good .dot { background: #34d399; box-shadow: 0 0 0 2px #34d399; }
+  .event.good .what { color: #86efac; }
+  .event.skip .dot { background: #64748b; box-shadow: 0 0 0 2px #64748b; }
+  .event.skip .what { color: #94a3b8; }
+  .event.freeze .dot { background: #a78bfa; box-shadow: 0 0 0 2px #a78bfa; }
+  .event.freeze .what { color: #c4b5fd; }
+  .old-track { border-top-style: dashed; }
+  .note { margin-top: 16px; font-size: 18px; color: #94a3b8; border-left: 3px solid #38bdf8; padding-left: 14px; }
+  .note b { color: #e2e8f0; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .grid .panel { min-height: 286px; }
+  .chip { display: inline-block; background: #0f1b33; border: 1px solid #2a3b57; border-radius: 12px; padding: 10px 14px; font-size: 19px; font-family: "SF Mono", Menlo, monospace; }
+  .chip.new { border-color: #1d4ed8; }
+  .compare { display: flex; align-items: center; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+  .arrow { color: #64748b; font-size: 24px; }
+  .same { margin-top: 18px; background: #0b1a2b; border: 1px solid #164e63; color: #67e8f9; padding: 12px 16px; border-radius: 12px; font-size: 19px; }
+  .unchanged { margin-top: 12px; color: #94a3b8; font-size: 17px; }
+  .rowline { display: flex; align-items: center; gap: 12px; font-size: 18px; margin: 11px 0; }
+  .seq { width: 26px; height: 26px; flex: none; border-radius: 50%; background: #1e293b; color: #94a3b8; text-align: center; line-height: 26px; font-size: 14px; }
+  .fallback { color: #94a3b8; text-decoration: line-through; }
+  .result { color: #86efac; }
+  .small { color: #94a3b8; font-size: 16px; }
+  .cmd { display: inline-block; background: #020617; border: 1px solid #334155; border-radius: 10px; padding: 10px 14px; font-family: "SF Mono", Menlo, monospace; color: #7dd3fc; font-size: 20px; }
+  .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .mini { font-size: 14px; padding: 5px 10px; border-radius: 999px; background: #0f2a22; color: #86efac; border: 1px solid #14532d; }
+  .mini.purple { background: #1e1b33; color: #c4b5fd; border-color: #4c1d95; }
+  .langs { display: flex; gap: 14px; margin-top: 18px; }
+  .lang { flex: 1; background: #0b1528; border: 1px solid #24324a; border-radius: 14px; padding: 14px; }
+  .lang h3 { margin: 0 0 8px; font-size: 17px; color: #94a3b8; font-weight: 500; }
+  .lang .t { font-family: "SF Mono", Menlo, monospace; font-size: 18px; color: #e2e8f0; }
+  .toggle { display: inline-flex; border: 1px solid #334155; border-radius: 999px; overflow: hidden; margin-top: 14px; }
+  .toggle span { padding: 6px 16px; font-size: 15px; color: #94a3b8; }
+  .toggle .on { background: #38bdf8; color: #04111f; font-weight: 700; }
+  footer { margin-top: 24px; color: #64748b; font-size: 16px; display: flex; justify-content: space-between; }
+  .kicker { color: #38bdf8; font-weight: 700; font-size: 15px; letter-spacing: 1px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div>
+      <div class="kicker">0.3.0 · PURE HOST · NO NEW UI</div>
+      <h1>标题生命周期 <span>5 个改动</span></h1>
+      <div class="sub">什么时候重算、什么时候不重算，以及怎么修好旧会话</div>
+    </div>
+    <div class="badge">计划中的 0.3.0，不是 0.2.0 现状</div>
+  </header>
+
+  <section class="panel timeline">
+    <h2><b>01</b>turn/end + 节流 + 冻结</h2>
+    <div class="hint">旧：每 10 条消息就重算，可能发生在回答中途。新：一轮回答结束后才判断，2 分钟内不重复，100 条后冻结。</div>
+
+    <div class="lane">
+      <div class="lane-tag"><b>旧行为</b>每 10 条消息</div>
+      <div class="track old-track">
+        <div class="event bad" style="left:14%"><div class="dot"></div><div class="when">第 10 条</div><div class="what">重算标题</div></div>
+        <div class="event bad" style="left:38%"><div class="dot"></div><div class="when">第 20 条</div><div class="what">可能正在回答中</div></div>
+        <div class="event bad" style="left:62%"><div class="dot"></div><div class="when">第 30 条</div><div class="what">重算标题</div></div>
+        <div class="event bad" style="left:86%"><div class="dot"></div><div class="when">第 40 条</div><div class="what">可能正在回答中</div></div>
+      </div>
+    </div>
+
+    <div class="lane">
+      <div class="lane-tag"><b>新行为</b>看回合 + 冷却</div>
+      <div class="track">
+        <div class="event good" style="left:14%"><div class="dot"></div><div class="when">Turn 1 结束</div><div class="what">生成标题</div></div>
+        <div class="event skip" style="left:38%"><div class="dot"></div><div class="when">Turn 2 结束 · +40s</div><div class="what">冷却中，跳过</div></div>
+        <div class="event good" style="left:62%"><div class="dot"></div><div class="when">Turn 3 结束 · +2m10s</div><div class="what">刷新标题</div></div>
+        <div class="event freeze" style="left:86%"><div class="dot"></div><div class="when">第 100 条消息后</div><div class="what">冻结自动刷新</div></div>
+      </div>
+    </div>
+    <div class="note"><b>省的是什么：</b>不在一轮回答里改标题，也不在 2 分钟内连续烧两次模型调用；长会话后期主题稳定，继续刷只是浪费。</div>
+  </section>
+
+  <div class="grid">
+    <section class="panel">
+      <h2><b>02</b>同题跳过</h2>
+      <div class="hint">新标题和当前标题只差空格/大小写时，不写新的 <code>session/title</code>。</div>
+      <div class="compare">
+        <div class="chip">当前：1030 | 分析 | 登录问题</div>
+        <div class="arrow">≈</div>
+        <div class="chip new">新：1030 | 分析 | 登录问题&nbsp;&nbsp;</div>
+      </div>
+      <div class="same">归一化后相同 → 不写入、不刷新侧栏</div>
+      <div class="unchanged">侧栏保持稳定，不会闪一下；日志里也不会多一条重复标题事件。</div>
+    </section>
+
+    <section class="panel">
+      <h2><b>03</b>启动回填（可选，默认关）</h2>
+      <div class="hint">插件装上前就存在的会话，标题还停在「首条消息前几个词」。</div>
+      <div class="rowline"><span class="seq">1</span><span class="fallback">这个目录任务先读一下背景…</span><span class="arrow">→</span><span class="result">1030 | 分析 | 电池问答验收</span></div>
+      <div class="rowline"><span class="seq">2</span><span class="fallback">帮我看看这个构建为什么失败…</span><span class="arrow">→</span><span class="result">1030 | 整改 | 构建失败排查</span></div>
+      <div class="rowline"><span class="seq">3</span><span class="fallback">现在部署到 8080 并复测…</span><span class="arrow">→</span><span class="result">1030 | 部署 | 8080 部署复测</span></div>
+      <div class="small">DSH 启动后每次取一个，间隔 2 秒，最多 30 个；只处理 fallback，手动改过的不动。</div>
+    </section>
+
+    <section class="panel">
+      <h2><b>04</b>/retitle 手动重算</h2>
+      <div class="hint">自动刷新被跳过或冻结时，随时手动补一次。</div>
+      <div style="margin-top: 14px"><span class="cmd">/retitle</span><span class="arrow" style="margin:0 12px">→</span><span class="chip new">标题立即刷新</span></div>
+      <div class="badges">
+        <span class="mini">立即执行</span>
+        <span class="mini purple">不受 2 分钟冷却</span>
+        <span class="mini purple">不受 100 条冻结</span>
+      </div>
+      <div class="small" style="margin-top: 14px">纯 Host 命令，不需要按钮/弹窗；不会改手动固定的标题。</div>
+    </section>
+
+    <section class="panel">
+      <h2><b>05</b>分类语言预设</h2>
+      <div class="hint">同一段对话，只切换「分类」的语言；主题仍跟随对话本身。</div>
+      <div class="langs">
+        <div class="lang"><h3>categoryPreset: zh</h3><div class="t">1030 | 分析 | Login 401</div></div>
+        <div class="lang"><h3>categoryPreset: en</h3><div class="t">1030 | Analysis | login 401</div></div>
+      </div>
+      <div class="toggle"><span class="on">zh</span><span>en</span></div>
+      <div class="small" style="margin-top: 10px">英文界面用户不会再拿到「分析 / 整改」这种中文分类。</div>
+    </section>
+  </div>
+
+  <footer>
+    <div>0.2.0 现状：每 10 条重算 · 中文分类 · 纯 Host</div>
+    <div>0.3.0 计划：5 项 · 仍不新增客户端弹窗</div>
+  </footer>
+</div>
+</body>
+</html>
