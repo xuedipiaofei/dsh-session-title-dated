@@ -6,6 +6,12 @@ const React = {
   useState: (initial) => [initial, () => {}],
   useEffect: () => {},
 }
+globalThis.document = {
+  head: { appendChild() {} },
+  createElement() {
+    return { id: '', textContent: '', remove() {} }
+  },
+}
 globalThis.window = {
   __ModuleLoader__: {
     load(entry) {
@@ -44,9 +50,14 @@ const ctx = {
 exported.apply(ctx)
 assert.deepEqual(
   registrations.map(({ definition }) => definition.name),
-  ['conversation.session.header.actions', 'sidebar.session.row.hover'],
+  [
+    'conversation.session.header.actions',
+    'sidebar.workspaces.session.menu.item',
+    'sidebar.session.row.hover',
+  ],
 )
 assert.equal(typeof registrations[0].component, 'function')
 assert.equal(typeof registrations[1].component, 'function')
+assert.equal(typeof registrations[2].component, 'function')
 
 console.log('client tests passed')

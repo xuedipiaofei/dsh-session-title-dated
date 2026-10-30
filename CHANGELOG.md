@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1 — 2026-10-30
+
+- Add a native Session-row menu item that runs `/retitle` without opening a dialog.
+
 ## 0.3.0 — 2026-10-30
 
 - Turn-aware refresh: react to completed `turn/end` events instead of counting

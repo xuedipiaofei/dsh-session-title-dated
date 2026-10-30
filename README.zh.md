@@ -34,7 +34,7 @@
 在 **插件 → 发现（Discover）→ 索引源** 添加：
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.3.0/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.3.1/market/index.json
 ```
 
 然后在列表里安装 **Dated session titles / 日期分类会话标题**。插件以 profile bundle 的形式安装，之后可在插件页启停。
@@ -88,7 +88,9 @@ fork 子会话、子代理会话，以及用户手动改名固定的标题都会
 
 - 会话头有一个**刷新图标**，效果等同输入 `/retitle`，会话运行中禁用；
 - 鼠标悬停会话行时，在原生相对时间下面多一行：
-  `耗时 1h 51m · 估算 ≈¥4.11 · 131.7M tokens`。
+  `耗时 1h 51m · 估算 ≈¥4.11 · 131.7M tokens`；
+- 会话行 `···` 菜单里多一项「重新生成标题」，排在原生“重命名”下面；同样调用
+  `/retitle`，不新开弹窗。
 
 数字来自 `sessionStats` / `tokenUsage` 投影，按 DeepSeek 当前 CNY 价格估算，并标注「估算」。只在悬停时向宿主请求，不会为了显示数字去恢复未加载的会话。DSH 原生已经有运行中/待交互/完成未读的状态点与 loader，所以本插件**不再加一层状态颜色**。
 

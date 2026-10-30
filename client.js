@@ -157,7 +157,47 @@ window.__ModuleLoader__.load({
       )
     }
 
+    function RegenerateMenuItem({ sessionId, useMenuOpenState, run }) {
+      const menuState =
+        typeof useMenuOpenState === 'function' ? useMenuOpenState() : null
+      return h(
+        'button',
+        {
+          type: 'button',
+          role: 'menuitem',
+          className: 'dsh-title-menu-item',
+          onClick: async () => {
+            if (Array.isArray(menuState) && typeof menuState[1] === 'function') {
+              menuState[1](false)
+            }
+            try {
+              await run(sessionId)
+            } catch (error) {
+              console.warn('session-title-dated: /retitle failed', error)
+            }
+          },
+        },
+        h('span', { className: 'dsh-title-menu-icon', 'aria-hidden': 'true' }, '↻'),
+        h('span', null, '重新生成标题'),
+      )
+    }
+
+    const STYLE_ID = 'dsh-session-title-dated-style'
+
+    function installStyle(ctx) {
+      const style = document.createElement('style')
+      style.id = STYLE_ID
+      style.textContent = `
+.dsh-title-menu-item{display:flex;align-items:center;gap:8px;width:100%;padding:6px 10px;border:0;border-radius:6px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.dsh-title-menu-item:hover{background:var(--dsw-alias-interactive-bg-hover,rgba(255,255,255,.06))}
+.dsh-title-menu-icon{width:16px;text-align:center;color:var(--dsw-alias-label-tertiary,#94a3b8)}
+`
+      document.head.appendChild(style)
+      ctx.effect?.(() => () => style.remove())
+    }
+
     function apply(ctx) {
+      installStyle(ctx)
       const run = async (sessionId) => {
         const response = await ctx.remote.commands.execute(sessionId, '/retitle', [])
         if (!response?.ok) {
@@ -179,6 +219,18 @@ window.__ModuleLoader__.load({
             inject: () => ({ run }),
           },
           RefreshAction,
+        ),
+      )
+
+      ctx.slots.inject('sidebar.workspaces.session.menu.item', () =>
+        ctx.slots.register(
+          {
+            name: 'sidebar.workspaces.session.menu.item',
+            id: 'session-title-dated-retitle',
+            order: 250,
+            inject: () => ({ run }),
+          },
+          RegenerateMenuItem,
         ),
       )
 

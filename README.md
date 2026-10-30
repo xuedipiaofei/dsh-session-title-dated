@@ -46,7 +46,7 @@ and mirrors conventions used by other coding agents.
 Add this market index source in **Plugins → Discover → Index sources**:
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.3.0/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.3.1/market/index.json
 ```
 
 Then install **Dated session titles** from the list. The plugin installs as a
@@ -121,7 +121,9 @@ mode using `retitleEvery`.
 - a **refresh icon** in the conversation header; it runs the same `/retitle`
   command as typing it, and is disabled while the session is running.
 - a **hover-card line** under the native relative time, for example
-  `耗时 1h 51m · 估算 ≈¥4.11 · 131.7M tokens`.
+  `耗时 1h 51m · 估算 ≈¥4.11 · 131.7M tokens`;
+- a **`重新生成标题` item** in the session row's `···` menu, placed under the
+  shipped Rename item. It runs the same `/retitle` command and adds no dialog.
 
 The hover line is derived from the `sessionStats` and `tokenUsage` projections,
 priced with the current DeepSeek CNY rate table, and labelled as an estimate.

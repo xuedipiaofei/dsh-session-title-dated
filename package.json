@@ -1,6 +1,6 @@
 {
   "name": "dsh-session-title-dated",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "DSH session titles in a DATE | CATEGORY | NAME template, with turn-aware retitling, a refresh button, and hover cost/duration.",
   "keywords": [
     "dsh",
