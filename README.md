@@ -129,7 +129,7 @@ mode using `retitleEvery`.
 
 ### Header refresh and hover stats
 
-0.4.0 adds a small browser half:
+0.4.1 adds a small browser half:
 
 - a **refresh icon** in the conversation header; it runs the same `/retitle`
   command as typing it, and is disabled while the session is running.
