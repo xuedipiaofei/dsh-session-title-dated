@@ -2,12 +2,13 @@
 
 This repository is already shaped as a DSH bundle and a format-1 market entry.
 
-## Current release (2026-10-28)
+## Current releases
 
-- GitHub: `xuedipiaofei/dsh-session-title-dated` pushed, tag `v0.1.0`.
-- npm: `dsh-session-title-dated@0.1.0` published through staged approval.
-- Market index: `market/index.json` pins the GitHub commit; the tag URL is live.
-- Community-list PR: pending the repository's one-day age requirement.
+- **0.2.0 (2026-10-30)**: prepared in this tree; publish and tag `v0.2.0`.
+- **0.1.0 (2026-10-28)**: published on npm, tag `v0.1.0`, listed in the
+  community directory (PR #10248 merged).
+- The community listing points at the repository/npm package, so a version bump
+  does not need a new awesome-list PR.
 
 | Field | Value |
 |---|---|
@@ -107,6 +108,17 @@ A direct `npm publish --access public` is still valid when the account or token
 allows it. If it returns `E403` about 2FA, use the staged flow above instead of
 creating a bypass token.
 
+### Preferred: OIDC trusted publishing
+
+The repository ships `.github/workflows/publish.yml`. Configure npm **Trusted
+Publishing** for the package (GitHub owner `xuedipiaofei`, repository
+`dsh-session-title-dated`, workflow `publish.yml`), then push a `v*` tag. The
+workflow publishes with `--provenance` using GitHub OIDC; no npm token, PAT, or
+2FA prompt is involved.
+
+This is the cleanest path for future releases. If the trusted publisher is not
+configured yet, the staged flow above remains the fallback.
+
 If npm rejects the name because it was claimed in the meantime, switch to a
 scope. Change the package name in **three** places, re-run `npm test`, then
 publish:
@@ -124,8 +136,8 @@ tested, and do not reuse `0.1.0` after unpublishing.
 ## 4. Tag the release
 
 ```sh
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.2.0
+git push origin v0.2.0
 ```
 
 ## 5. Update and host the market index
@@ -177,11 +189,11 @@ Commit and push the index change.
 Use jsDelivr over GitHub (HTTPS, no redirects, no Pages setup):
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.1.0/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.2.0/market/index.json
 ```
 
 Prefer the tag URL: jsDelivr caches `@main` for a long time, and a cached copy
-can still point at an older source. `@v0.1.0` was fetched fresh after the tag
+can still point at an older source. `@v0.2.0` was fetched fresh after the tag
 was pushed; bump the tag for each release. GitHub Pages also works: enable Pages
 from the repository root and use
 
@@ -201,7 +213,7 @@ request starts.
 For a CLI profile:
 
 ```sh
-dsh plugin --profile title-test add dsh-session-title-dated@0.1.0
+dsh plugin --profile title-test add dsh-session-title-dated@0.2.0
 dsh --profile title-test --dump-config | grep -A8 session-title
 ```
 

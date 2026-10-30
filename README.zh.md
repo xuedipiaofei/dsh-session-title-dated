@@ -2,7 +2,7 @@
 
 [English](./README.md) | 中文
 
-给 DeepSeek Harness 的新会话自动生成固定格式的标题：
+给 DeepSeek Harness 的会话按模板自动生成标题。默认格式：
 
 ```text
 日期 | 分类 | 名称
@@ -16,7 +16,7 @@
 1026 | 部署 | Ubuntu 环境初始化
 ```
 
-日期由插件从**会话创建时间**计算，不交给模型；分类只能从可配置词表中选择，并在本地校验；模型只负责提出分类和名称，最终格式由插件拼装。模型不可用、超时或输出不合法时，插件会用本地规则生成同样格式的标题，不会退回无格式标题。
+日期由插件从**会话创建时间**计算，不交给模型；分类只能从可配置词表中选择，并在本地校验；模型只负责提出分类和名称，最终格式由模板决定。
 
 ## 为什么
 
@@ -25,7 +25,7 @@
 ## 要求
 
 - DeepSeek Harness `>=0.2.1-rc.3 <0.3.0`。
-- 会话有可用的模型路由；标题请求默认跟随会话当前的 provider/model。
+- 会话有可用的模型路由；标题请求默认跟随会话当前的 provider/model，也可用 `provider`/`model` 单独指定。
 
 ## 安装
 
@@ -34,10 +34,10 @@
 在 **插件 → 发现（Discover）→ 索引源** 添加：
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.1.0/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.2.0/market/index.json
 ```
 
-然后在列表里安装 **Dated session titles / 日期分类会话标题**。插件以 profile bundle 的形式安装，之后可在插件页启停。索引钉的是 GitHub commit，安装可复现；npm 上也有发布版本。
+然后在列表里安装 **Dated session titles / 日期分类会话标题**。插件以 profile bundle 的形式安装，之后可在插件页启停。
 
 ### CLI
 
@@ -47,7 +47,7 @@ https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.1.0/market/i
 dsh plugin --profile <profile> add github:xuedipiaofei/dsh-session-title-dated
 ```
 
-npm 上已有发布版本，也可以用短形式：
+从 npm 安装：
 
 ```sh
 dsh plugin --profile <profile> add dsh-session-title-dated
@@ -61,17 +61,29 @@ dsh plugin --profile <profile> add ./dsh-session-title-dated
 
 Electron Desktop 的 profile 由应用管理，请在应用的插件页安装，不要用 `dsh plugin --profile desktop`。
 
-bundle 的 patch 会禁用内置的 `session-title-llm` 行并插入本插件。**不要同时启用官方的 `@deepseek-ai/dsh-experimental-session-titles-bundle`**：两者替换的是同一个 provider 槽位，标题服务只接受一个 provider。
+bundle 的 patch 会禁用内置的 `session-title-llm` 行并插入本插件。**不要同时启用官方的 `@deepseek-ai/dsh-experimental-session-titles-bundle`**：两者替换的是同一个 provider 槽位，标题服务只接受一个 provider。如果别的插件先注册成功，本插件只打一条 warn 并保持 inactive，不会让启动失败。
 
 ## 实现方式
 
 - `cordis.patch.yml` 关闭 `session-title-llm`，插入本包的 `session-title-dated` 行。
 - `lib/index.js` 通过 `ctx.sessionTitle.register()` 注册提供者，并复用官方的
   `@deepseek-ai/dsh-session-title-llm` 处理路由、超时、取消、token 上限和请求日志。
-- `lib/format.js` 无依赖：日期、分类校验、名称清洗、格式拼装、按 UTF-8 字节截断。
+- `lib/format.js` 无依赖：本地时区日期、模板渲染、分类校验、名称清洗、按 UTF-8 字节截断。
 
-插件从 `session.header.createdAt` 按配置时区计算日期，让模型返回
-`{"category":"...","name":"..."}`，校验分类、按标题服务的字节预算裁剪名称，最后写入一条 `session/title` 事件。
+插件从 `session.header.createdAt` 按**本机时区**计算日期，让模型返回
+`{"category":"...","name":"..."}`，校验分类，再按模板拼装。`{type}` 或 `{topic}` 为空时，相邻分隔符会一起消失，不会留下 `||`。
+
+### 重算节奏
+
+provider 注册为 `first-prompt`，首条消息由标题服务自动命名。之后插件自己数合格的人类消息，每满 `retitleEvery` 条（默认 **10**）调用一次 `ctx.sessionTitle.refresh()`。它不会每条消息都调模型，也不会写重复的标题事件。fork 会话和用户手动固定的标题会跳过。
+
+`retitleEvery: 0` 表示只在首条消息时命名一次，之后不自动更新。旧的 `cadence: first-prompt` / `all-prompts` 仍兼容，分别映射到 `0` / `1`。
+
+### 失败时
+
+- 已经有标题时，重算失败会**保留旧标题**：provider 抛错，标题服务据此不提交新修订。
+- 只有还没有标题的会话才用本地兜底：日期 + 推断分类 + 首条消息开头。
+- 模型以 `max-tokens` 结束时，只要还能解析出可用文本就继续用；只有完全不可用才算失败。
 
 ## 配置
 
@@ -80,8 +92,8 @@ bundle 的 patch 会禁用内置的 `session-title-llm` 行并插入本插件。
 ```yaml
 - id: session-title-dated
   config:
-    cadence: first-prompt
-    dateFormat: YYMM
+    retitleEvery: 10
+    template: '{MMDD} | {type} | {topic}'
     timeZone: Asia/Shanghai
     categories:
       - 分析
@@ -97,32 +109,44 @@ bundle 的 patch 会禁用内置的 `session-title-llm` 行并插入本插件。
 
 | 字段 | 默认 | 说明 |
 |---|---|---|
-| `cadence` | `first-prompt` | 首条消息后命名一次；`all-prompts` 每次新提示都尝试更新 |
-| `dateFormat` | `MMDD` | `MMDD`（`1028`）/ `YYMM`（`2610`）/ `YYYYMMDD`（`20261028`） |
-| `timeZone` | `Asia/Shanghai` | 计算日期用的时区 |
-| `categories` | 内置中文 8 类 | 模型可选分类；也用于本地兜底分类 |
+| `retitleEvery` | `10` | 每 N 条合格用户消息重算一次；`0` 表示只在首条消息时命名 |
+| `template` | `{date} \| {type} \| {topic}` | 标题模板，占位符见下 |
+| `dateFormat` | `MMDD` | `{date}` 使用：`MMDD`（`1028`）/ `YYMM`（`2610`）/ `YYYYMMDD` |
+| `timeZone` | 本机时区 | 日期/时间占位符使用的 IANA 时区 |
+| `categories` | 内置中文 8 类 | 模型可选分类，也用于本地兜底分类 |
 | `maxNameChars` | `20` | 名称字符上限（最终还受字节上限约束） |
-| `maxTitleBytes` | 标题服务上限（`80`） | 实际取它与 `session-title` 的 `maxTitleBytes` 较小值 |
-| `maxInputBytes` | `8192` | 标题请求输入上限 |
+| `maxTitleBytes` | 标题服务上限（`80`） | 实际取它与 `session-title` 的较小值 |
+| `recentMessages` | `8` | 发送首条消息 + 最近 N 条消息 |
+| `maxInputBytes` | `4096` | 单次标题请求输入上限 |
 | `maxOutputTokens` | `4096` | 输出上限（含推理 token） |
-| `timeoutMs` | `60000` | 标题请求超时 |
+| `timeoutMs` | `90000` | 标题请求超时 |
 | `provider` / `model` | 跟随会话 | 可选，成对设置时用独立模型生成标题 |
+
+### 模板占位符
+
+| 占位符 | 含义 |
+|---|---|
+| `{date}` | 按 `dateFormat` 渲染的日期（`1028`、`2610`、`20261028`） |
+| `{YYYY}` `{YY}` `{MM}` `{DD}` `{HH}` `{mm}` `{ss}` | 日期/时间部件，可任意拼接（`{YYYYMMDD}`、`{HHmm}`） |
+| `{type}` | 分类；为空时整段及相邻分隔符一起消失 |
+| `{topic}` | 名称；为空时整段及相邻分隔符一起消失 |
+
+不认识的占位符会**原样保留**（`{MMDD} {bogus}` 会保留 `{bogus}`），方便一眼看出模板写错，而不是悄悄消失。最终仍受 `maxTitleBytes` 截断。
 
 默认分类是中文。需要英文或其它领域词表时直接替换 `categories`；提示词会使用配置的标签，本地兜底也会把常见中英文关键词映射到这些标签。
 
-`1028 | 分析 | ` 占 16 个 UTF-8 字节，默认 80 字节标题预算下名称约可用 21 个汉字；超长会在完整码点处截断。
-
 ## 隐私与成本
 
-- 默认 `first-prompt` 只把首条有效用户消息发给模型；`all-prompts` 会发首条消息加最多 5 条最近消息。消息以 JSON 包裹，避免用户文本破坏分隔符。
+- 发送首条有效用户消息，加上最多 `recentMessages - 1` 条最近消息。消息以 JSON 包裹，避免用户文本破坏分隔符。
 - 请求使用会话当前的 provider/model，或可选的 `provider`/`model` 覆盖。插件没有其它网络请求，也不收集遥测。
-- 默认每个会话一次辅助请求；`all-prompts` 每次新用户消息一次。标题生成是异步的，不会阻塞主回复；`maxOutputTokens`、`maxInputBytes`、`timeoutMs` 都会约束它。
+- 首条标题一次辅助请求，之后每 `retitleEvery` 条消息一次。标题生成是异步的，不会阻塞主回复；`maxOutputTokens`、`maxInputBytes`、`timeoutMs` 都会约束它。
 - 标题作为普通 `session/title` 事件写入会话日志。用户手动重命名后标题会被固定，后续自动命名不会覆盖。
 
 ## 兼容性
 
 - 本包面向 DSH 0.2 线；`engines.dsh` 会在 0.3+ 上拒绝安装，直到按新 API 更新。
-- bundle 依赖内置行 id `session-title-llm`。如果已有其它标题 provider 注册，本插件会激活失败而不是悄悄抢占；先停用另一个。
+- bundle 依赖内置行 id `session-title-llm`。如果已有其它标题 provider 先注册，本插件会打 warn 并保持 inactive；先停用另一个再重载。
+- `llm` 采用延迟注入：组合里没有 LLM 服务时插件仍能加载，只是退回本地命名。
 - 插件动态 import `@deepseek-ai/dsh-session-title-llm`。执行器缺失或不兼容时会降级为本地命名；如果 `ctx.sessionTitle` API 本身变化，则可能无法注册。
 
 ## 开发
@@ -130,9 +154,9 @@ bundle 的 patch 会禁用内置的 `session-title-llm` 行并插入本插件。
 仓库没有运行时依赖，也不需要构建。
 
 ```sh
-npm test              # 格式测试、带 stub 执行器的 provider 测试、元数据/索引检查
+npm test               # 格式测试、带 stub 执行器的 provider 测试、元数据/索引检查
 npm run validate:index # 可选：用官方校验器校验 market/index.json（需先安装该包）
-npm run pack:check    # 查看 npm tarball 内容
+npm run pack:check     # 查看 npm tarball 内容
 ```
 
 provider 测试用 Node 的 `module.registerHooks` 把

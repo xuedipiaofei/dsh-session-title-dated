@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.2.0 — 2026-10-30
+
+- Retitle every N user messages (`retitleEvery`, default 10) through
+  `ctx.sessionTitle.refresh()` instead of calling the model on every prompt.
+- Failed retitles keep the existing title; local naming is used only when the
+  session has no title yet.
+- Configurable `template` with `{date}`, `{type}`, `{topic}`, and free
+  date/time placeholders; empty segments remove their adjacent separator.
+- Date/time defaults to the host's local time zone; `timeZone` remains
+  configurable.
+- Input is bounded to the first message plus recent messages (4 KiB default).
+- Tolerant parser for labelled and fenced output; `max-tokens` responses still
+  contribute usable text.
+- `llm` is injected lazily; a missing LLM service no longer leaves the plugin
+  entry pending.
+- Registration conflicts with another title provider are logged and do not fail
+  startup.
+- `timeoutMs` default raised to 90 s, with a 4 KiB input budget.
+- GitHub Actions OIDC publishing workflow.
+- `cadence` is retained as a compatibility alias for `retitleEvery`.
+
 ## 0.1.0 — 2026-10-28
 
 - Initial release.

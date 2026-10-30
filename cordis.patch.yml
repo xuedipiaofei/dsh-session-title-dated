@@ -10,12 +10,13 @@
     - id: session-title-dated
       name: dsh-session-title-dated
       config:
-        # first-prompt: one title per session (cheap, matches the shipped
-        # default). Change to all-prompts to retitle as the task evolves.
-        cadence: first-prompt
-        # MMDD matches the reference list (1027). Use YYMM for 2610.
+        # 0 = title once on the first message; 10 = refresh every 10 human
+        # messages. The provider itself never calls the model on every turn.
+        retitleEvery: 10
+        # MMDD matches the reference list (1027). The template can also use
+        # {YYYYMMDD}, {YYMM}, {HHmm}, {type}, {topic}, etc.
         dateFormat: MMDD
-        timeZone: Asia/Shanghai
-        maxInputBytes: 8192
+        # Omit timeZone to follow the host's local zone.
+        maxInputBytes: 4096
         maxOutputTokens: 4096
-        timeoutMs: 60000
+        timeoutMs: 90000

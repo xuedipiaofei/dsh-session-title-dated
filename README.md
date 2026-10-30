@@ -6,7 +6,8 @@
 
 English | [中文](./README.zh.md)
 
-A DeepSeek Harness title provider that names every new session in the form:
+A DeepSeek Harness title provider that names sessions with a configurable
+template. The default is:
 
 ```text
 DATE | CATEGORY | NAME
@@ -23,8 +24,7 @@ For example:
 Dates are computed by the plugin from the session's creation time, never by the
 model. Categories are chosen from a small configurable taxonomy and validated
 locally. The model only proposes the category and the name; the provider owns
-the final format. If the model is unavailable, times out, or returns invalid
-output, a deterministic local fallback still produces a correctly shaped title.
+the final format.
 
 ## Why
 
@@ -37,7 +37,7 @@ and mirrors conventions used by other coding agents.
 
 - DeepSeek Harness `>=0.2.1-rc.3 <0.3.0`.
 - A working model route for the session; the title request uses the session's
-  current provider/model unless configured otherwise.
+  current provider/model unless `provider`/`model` are configured.
 
 ## Install
 
@@ -46,13 +46,12 @@ and mirrors conventions used by other coding agents.
 Add this market index source in **Plugins → Discover → Index sources**:
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.1.0/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-dated@v0.2.0/market/index.json
 ```
 
 Then install **Dated session titles** from the list. The plugin installs as a
 profile bundle and appears in the Plugins page, where it can be enabled or
-disabled like any other bundle. The index pins a GitHub commit for reproducible
-installs; the package is also published on npm.
+disabled like any other bundle.
 
 ### CLI
 
@@ -62,7 +61,7 @@ From GitHub:
 dsh plugin --profile <profile> add github:xuedipiaofei/dsh-session-title-dated
 ```
 
-The package is also on npm, so the shorter form works:
+From npm:
 
 ```sh
 dsh plugin --profile <profile> add dsh-session-title-dated
@@ -81,6 +80,8 @@ The bundle patch disables the shipped `session-title-llm` row and inserts this
 provider. Do not enable the official
 `@deepseek-ai/dsh-experimental-session-titles-bundle` at the same time: both
 replace the same provider slot, and the title service accepts only one provider.
+If another provider wins the registration race, this plugin logs a warning and
+stays inactive instead of failing startup.
 
 ## How it works
 
@@ -89,13 +90,34 @@ replace the same provider slot, and the title service accepts only one provider.
 - `lib/index.js` registers a provider through `ctx.sessionTitle.register()` and
   reuses `@deepseek-ai/dsh-session-title-llm` for route selection, timeouts,
   cancellation, token limits, and exact auxiliary-request logging.
-- `lib/format.js` is dependency-free: date formatting, category validation,
-  name sanitizing, composition, and UTF-8 byte truncation.
+- `lib/format.js` is dependency-free: local-time date parts, template rendering,
+  category validation, name sanitizing, and UTF-8 byte truncation.
 
-The provider computes the date from `session.header.createdAt` in the configured
-time zone, asks the model for `{"category":"...","name":"..."}`, validates the
-category against the configured taxonomy, clips the name to the title service's
-byte budget, and writes one `session/title` event.
+The provider computes the date from `session.header.createdAt` in the host's
+local time zone, asks the model for `{"category":"...","name":"..."}`, validates
+the category, and renders the template. Empty `{type}` or `{topic}` segments
+remove their neighbouring separator instead of leaving `||`.
+
+### Retitle cadence
+
+The provider is registered as `first-prompt`, so the title service names the
+session once. After that, the plugin counts eligible user messages and calls
+`ctx.sessionTitle.refresh()` every `retitleEvery` messages (default **10**). It
+does not call the model on every turn, and it writes no duplicate title events.
+Forks and user-pinned titles are skipped.
+
+Set `retitleEvery: 0` to name once and never retitle automatically. The old
+`cadence: first-prompt` / `all-prompts` values still work for compatibility and
+map to `0` / `1`.
+
+### Failures
+
+- A failed retitle **keeps the existing title**: the provider throws, which is
+  the title service's signal to retain the previous revision.
+- Only a session with no title yet gets a local fallback: date, an inferred
+  category, and the first message's leading words.
+- A `max-tokens` finish is still parsed when it contains usable text; only an
+  unusable response counts as a failure.
 
 ## Configuration
 
@@ -104,8 +126,8 @@ Override the row in the profile's `cordis.patch.yml`:
 ```yaml
 - id: session-title-dated
   config:
-    cadence: first-prompt
-    dateFormat: YYMM
+    retitleEvery: 10
+    template: '{MMDD} | {type} | {topic}'
     timeZone: Asia/Shanghai
     categories:
       - Analysis
@@ -121,36 +143,46 @@ Override the row in the profile's `cordis.patch.yml`:
 
 | Field | Default | Meaning |
 |---|---|---|
-| `cadence` | `first-prompt` | Name once after the first eligible message, or `all-prompts` to retitle as the task evolves |
-| `dateFormat` | `MMDD` | `MMDD` (`1028`), `YYMM` (`2610`), or `YYYYMMDD` (`20261028`) |
-| `timeZone` | `Asia/Shanghai` | Time zone used to derive the date |
-| `categories` | Chinese 8-item set | Categories the model may choose; labels are also used by the local fallback classifier |
-| `maxNameChars` | `20` | Character cap for the name before the byte cap applies |
-| `maxTitleBytes` | service cap (`80`) | Effective cap is the smaller of this and `session-title`'s `maxTitleBytes` |
-| `maxInputBytes` | `8192` | Input budget for the title request |
+| `retitleEvery` | `10` | Refresh after every N eligible user messages. `0` = only the first title |
+| `template` | `{date} \| {type} \| {topic}` | Title template; see the placeholders below |
+| `dateFormat` | `MMDD` | Used by `{date}`: `MMDD` (`1028`), `YYMM` (`2610`), or `YYYYMMDD` |
+| `timeZone` | host local | IANA zone used for date/time placeholders |
+| `categories` | Chinese 8-item set | Categories the model may choose; also used by the local classifier |
+| `maxNameChars` | `20` | Character cap before the byte cap applies |
+| `maxTitleBytes` | service cap (`80`) | Effective cap is the smaller of this and `session-title`'s cap |
+| `recentMessages` | `8` | First message plus this many recent messages are sent |
+| `maxInputBytes` | `4096` | Input budget for one title request |
 | `maxOutputTokens` | `4096` | Output cap, including reasoning tokens |
-| `timeoutMs` | `60000` | End-to-end title-request deadline |
+| `timeoutMs` | `90000` | End-to-end title-request deadline |
 | `provider` / `model` | session route | Optional pair to route title generation independently |
+
+### Template placeholders
+
+| Placeholder | Meaning |
+|---|---|
+| `{date}` | Date in `dateFormat` (`1028`, `2610`, `20261028`) |
+| `{YYYY}` `{YY}` `{MM}` `{DD}` `{HH}` `{mm}` `{ss}` | Date/time parts; concatenate freely (`{YYYYMMDD}`, `{HHmm}`) |
+| `{type}` | Category; an empty value removes the segment and its separator |
+| `{topic}` | Name; an empty value removes the segment and its separator |
+
+An unknown placeholder is left verbatim (`{MMDD} {bogus}` keeps `{bogus}`), so a
+typo is visible instead of silently disappearing. The template owns the final
+format; `maxTitleBytes` still clips the result.
 
 The default taxonomy is Chinese. Supply `categories` to use any other language
 or domain; the prompt lists the configured labels and the local fallback maps
 common English and Chinese keywords onto them.
 
-`1028 | 分析 | ` occupies 16 UTF-8 bytes, leaving about 21 Chinese characters
-within the default 80-byte title budget. Longer names are truncated at a
-code-point boundary.
-
 ## Privacy and cost
 
-- By default (`first-prompt`) the first eligible user message is sent to the
-  model. With `all-prompts`, the first message plus up to five recent messages
-  are sent. Message text is framed as JSON to keep user content from breaking
-  delimiters.
+- The first eligible user message plus up to `recentMessages - 1` recent
+  messages are sent to the model. Message text is framed as JSON to keep user
+  content from breaking delimiters.
 - The request uses the session's configured provider/model, or the optional
   `provider`/`model` override. The plugin makes no other network calls and
   collects no telemetry.
-- One auxiliary request is made per session by default. `all-prompts` makes one
-  per new user message. Title work is asynchronous and never delays the main
+- One auxiliary request is made for the first title, then one every
+  `retitleEvery` messages. Title work is asynchronous and never delays the main
   agent response; `maxOutputTokens`, `maxInputBytes`, and `timeoutMs` bound it.
 - The resulting title is stored in the session log as a normal `session/title`
   event. A manual rename pins the title and later automatic revisions do not
@@ -161,8 +193,10 @@ code-point boundary.
 - This package targets the DSH 0.2 line. `engines.dsh` refuses to install it on
   0.3+ until it is updated against the new title API.
 - The bundle assumes the shipped row id `session-title-llm`. If another title
-  provider is already registered, activation fails rather than silently winning;
-  disable the other provider first.
+  provider is registered first, this plugin logs and stays inactive; disable the
+  other provider and reload.
+- `llm` is awaited lazily, so a composition without the LLM service still loads
+  the plugin and falls back to local naming.
 - The provider imports `@deepseek-ai/dsh-session-title-llm` dynamically. A
   missing or incompatible executor degrades to local naming, but a changed
   `ctx.sessionTitle` API can prevent registration. Pin the DSH range when
@@ -173,9 +207,9 @@ code-point boundary.
 The repository has no runtime or build dependencies.
 
 ```sh
-npm test              # format tests, provider tests with a stubbed executor, metadata/index checks
+npm test               # format tests, provider tests with a stubbed executor, metadata/index checks
 npm run validate:index # optional: validate market/index.json with the official validator if installed
-npm run pack:check    # inspect the npm tarball contents
+npm run pack:check     # inspect the npm tarball contents
 ```
 
 The provider test redirects `@deepseek-ai/dsh-session-title-llm` to

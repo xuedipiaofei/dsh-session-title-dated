@@ -1,7 +1,7 @@
 {
   "name": "dsh-session-title-dated",
-  "version": "0.1.0",
-  "description": "DSH session titles in the form DATE | CATEGORY | NAME, generated from the session model with a deterministic local fallback.",
+  "version": "0.2.0",
+  "description": "DSH session titles in a DATE | CATEGORY | NAME template, retitled periodically from the session model with a deterministic fallback.",
   "keywords": [
     "dsh",
     "dsh-plugin",
