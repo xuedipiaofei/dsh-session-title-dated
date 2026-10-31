@@ -34,8 +34,8 @@
         "zh": "会话标题印章"
       },
       "description": {
-        "en": "Keeps DSH session titles in DATE | CATEGORY | NAME with turn-aware auto-retitle, manual refresh, and hover cost/duration.",
-        "zh": "把 DSH 会话标题固定为「日期 | 分类 | 名称」，支持回答后自动重算、手动刷新和悬停成本/耗时。"
+        "en": "Keeps DSH session titles in DATE | CATEGORY | NAME with turn-aware auto-retitle, a Generate title action, and hover cost/duration.",
+        "zh": "把 DSH 会话标题固定为「日期 | 分类 | 名称」，支持回答后自动重算、自动生成标题和悬停成本/耗时。"
       },
       "author": "xuedipiaofei",
       "icon": "../icon.svg",
@@ -57,7 +57,7 @@
       },
       "versions": [
         {
-          "version": "0.4.1",
+          "version": "0.4.2",
           "publishTimestamp": 1793368308,
           "source": {
             "type": "git",

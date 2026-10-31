@@ -11,8 +11,8 @@ title. Beyond automatic naming:
 
 - **Auto refresh** — after a completed turn, with a 2-minute cooldown and a
   100-message freeze; forks and user-pinned titles are skipped.
-- **Manual refresh** — the conversation-header ↻ button, the session row's
-  **Regenerate title** menu item, or `/retitle`.
+- **Generate title** — the conversation-header ↻ button, the session row's
+  **Generate title** menu item, or `/retitle`.
 - **Hover stats** — elapsed time, estimated CNY cost, and token count on the
   session hover card.
 - **Category language** — `categoryPreset: zh | en`, or your own `categories`.
@@ -59,7 +59,7 @@ and mirrors conventions used by other coding agents.
 Add this market index source in **Plugins → Discover → Index sources**:
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-stamp@v0.4.1/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-stamp@v0.4.2/market/index.json
 ```
 
 Then install **Session title stamp** from the list. The plugin installs as a
@@ -127,15 +127,15 @@ Forks and subagent sessions are skipped, as are titles pinned by a manual
 rename. Setting `refreshOnTurnEnd: false` restores the legacy message-count
 mode using `retitleEvery`.
 
-### Header refresh and hover stats
+### Header button and hover stats
 
-0.4.1 adds a small browser half:
+0.4.2 adds a small browser half:
 
 - a **refresh icon** in the conversation header; it runs the same `/retitle`
   command as typing it, and is disabled while the session is running.
 - a **hover-card line** under the native relative time, for example
   `Duration 1h 51m · est. ≈¥4.11 · 131.7M tokens`;
-- a **Regenerate title** item at the top of the session row's `···` menu. It
+- a **Generate title** item at the top of the session row's `···` menu. It
   runs the same `/retitle` command and adds no dialog.
 
 The hover line is derived from the `sessionStats` and `tokenUsage` projections,

@@ -17,26 +17,25 @@ window.__ModuleLoader__.load({
     const { useEffect, useState } = React
     const h = React.createElement
 
+    const NS = 'dsh-session-title-stamp'
     const STATS_PATH = '/api/session-title-stamp/stats'
-    const inject = ['slots', 'remote', 'remote.commands']
-    const isZh = (document.documentElement.lang || navigator.language || '')
-      .toLowerCase()
-      .startsWith('zh')
-    const LABELS = isZh
-      ? {
-          menu: '重新生成标题',
-          header: '重新生成标题',
-          running: '会话运行中，稍后再试',
-          duration: '耗时',
-          estimate: '估算',
-        }
-      : {
-          menu: 'Regenerate title',
-          header: 'Regenerate title',
-          running: 'Session is running; try again later',
-          duration: 'Duration',
-          estimate: 'est.',
-        }
+    const inject = ['slots', 'remote', 'remote.commands', 'locale']
+    const DICT = {
+      zh: {
+        menu: '自动生成标题',
+        tip: '自动识别分类，生成「日期 | 分类 | 名称」标题',
+        running: '会话运行中，稍后再试',
+        duration: '耗时',
+        estimate: '估算',
+      },
+      en: {
+        menu: 'Generate title',
+        tip: 'Detect the category and generate a DATE | CATEGORY | NAME title',
+        running: 'Session is running; try again later',
+        duration: 'Duration',
+        estimate: 'est.',
+      },
+    }
 
     function formatDuration(ms) {
       if (typeof ms !== 'number' || !Number.isFinite(ms) || ms < 0) return undefined
@@ -81,7 +80,7 @@ window.__ModuleLoader__.load({
       )
     }
 
-    function RefreshAction({ sessionId, useSession, run }) {
+    function RefreshAction({ sessionId, useSession, run, t }) {
       const [busy, setBusy] = useState(false)
       const [failed, setFailed] = useState(false)
       const running =
@@ -109,8 +108,8 @@ window.__ModuleLoader__.load({
           type: 'button',
           className: 'dsh-title-refresh',
           disabled,
-          title: running ? LABELS.running : LABELS.header,
-          'aria-label': LABELS.header,
+          title: running ? t('running') : t('tip'),
+          'aria-label': t('menu'),
           onClick: click,
           style: {
             display: 'inline-flex',
@@ -133,7 +132,7 @@ window.__ModuleLoader__.load({
       )
     }
 
-    function HoverStats({ sessionId }) {
+    function HoverStats({ sessionId, t }) {
       const [data, setData] = useState(null)
       useEffect(() => {
         let cancelled = false
@@ -155,8 +154,8 @@ window.__ModuleLoader__.load({
       const cost = formatCost(data.costCny)
       const tokens = formatTokens(data.tokens)
       const parts = [
-        duration === undefined ? undefined : `${LABELS.duration} ${duration}`,
-        cost === undefined ? undefined : `${LABELS.estimate} ${cost}`,
+        duration === undefined ? undefined : `${t('duration')} ${duration}`,
+        cost === undefined ? undefined : `${t('estimate')} ${cost}`,
         tokens === undefined ? undefined : `${tokens} tokens`,
       ].filter(Boolean)
       if (parts.length === 0) return null
@@ -175,7 +174,7 @@ window.__ModuleLoader__.load({
       )
     }
 
-    function RegenerateMenuItem({ sessionId, useMenuOpenState, run }) {
+    function RegenerateMenuItem({ sessionId, useMenuOpenState, run, t }) {
       const menuState =
         typeof useMenuOpenState === 'function' ? useMenuOpenState() : null
       return h(
@@ -184,6 +183,7 @@ window.__ModuleLoader__.load({
           type: 'button',
           role: 'menuitem',
           className: 'dsh-title-menu-item',
+          title: t('tip'),
           onClick: async () => {
             if (Array.isArray(menuState) && typeof menuState[1] === 'function') {
               menuState[1](false)
@@ -200,7 +200,7 @@ window.__ModuleLoader__.load({
           { className: 'dsh-title-menu-icon', 'aria-hidden': 'true' },
           h(RefreshIcon),
         ),
-        h('span', null, LABELS.menu),
+        h('span', null, t('menu')),
       )
     }
 
@@ -222,6 +222,8 @@ window.__ModuleLoader__.load({
 
     function apply(ctx) {
       installStyle(ctx)
+      ctx.effect?.(() => ctx.locale.register(NS, DICT))
+      const t = ctx.locale.bind(NS)
       const run = async (sessionId) => {
         const response = await ctx.remote.commands.execute(sessionId, '/retitle', [])
         if (!response?.ok) {
@@ -240,7 +242,7 @@ window.__ModuleLoader__.load({
             name: 'conversation.session.header.actions',
             id: 'session-title-stamp-refresh',
             order: 40,
-            inject: () => ({ run }),
+            inject: () => ({ run, t }),
           },
           RefreshAction,
         ),
@@ -252,7 +254,7 @@ window.__ModuleLoader__.load({
             name: 'sidebar.workspaces.session.menu.item',
             id: 'session-title-stamp-retitle',
             order: 0,
-            inject: () => ({ run }),
+            inject: () => ({ run, t }),
           },
           RegenerateMenuItem,
         ),
@@ -264,7 +266,7 @@ window.__ModuleLoader__.load({
             name: 'sidebar.session.row.hover',
             id: 'session-title-stamp-stats',
             order: 0,
-            inject: () => ({}),
+            inject: () => ({ t }),
           },
           HoverStats,
         ),

@@ -28,10 +28,17 @@ const exported = loaded.factory((specifier) => {
   if (specifier === 'react') return React
   throw new Error(`unexpected module ${specifier}`)
 })
-assert.deepEqual(exported.inject, ['slots', 'remote', 'remote.commands'])
+assert.deepEqual(exported.inject, ['slots', 'remote', 'remote.commands', 'locale'])
 
 const registrations = []
 const ctx = {
+  effect() {},
+  locale: {
+    register() {},
+    bind() {
+      return (key) => key
+    },
+  },
   slots: {
     inject(_name, callback) {
       callback()

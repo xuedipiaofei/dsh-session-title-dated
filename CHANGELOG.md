@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.2 — 2026-10-31
+
+- Menu/header action renamed to 自动生成标题 / Generate title.
+- Client labels now come from the DSH locale service, so they follow the app language instead of `html lang`.
+- Header tooltip explains the category + title result.
+
 ## 0.4.1 — 2026-10-30
 
 - English README labels use "Regenerate title"; client menu label follows the document language.
