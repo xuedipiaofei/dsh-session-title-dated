@@ -136,6 +136,7 @@ window.__ModuleLoader__.load({
       const [data, setData] = useState(null)
       useEffect(() => {
         let cancelled = false
+        setData(null)
         if (typeof sessionId !== 'string' || sessionId === '') return undefined
         const url = `${STATS_PATH}?sessionId=${encodeURIComponent(sessionId)}`
         fetch(url, { headers: { accept: 'application/json' } })

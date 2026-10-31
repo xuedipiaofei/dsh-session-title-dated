@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.3 — 2026-10-31
+
+- Normalize `session-` prefixed session ids in the stats route.
+- Clear stale hover stats when the hovered session changes.
+
 ## 0.4.2 — 2026-10-31
 
 - Menu/header action renamed to 自动生成标题 / Generate title.
