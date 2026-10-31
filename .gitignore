@@ -6,3 +6,9 @@ coverage/
 .env
 .pnpm-store/
 .npmrc
+
+__pycache__/
+*.pyc
+
+# Local handoff records are not distributed.
+.harness/

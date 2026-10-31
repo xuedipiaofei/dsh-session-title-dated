@@ -1,0 +1,15 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "codex-session-title-stamp",
+  "version": "0.1.0",
+  "description": "Creation-date session titles with safe manual refresh for Codex desktop.",
+  "extensions": {
+    "com.openai": {
+      "hooks": "./hooks/hooks.json",
+      "interface": {
+        "displayName": "Title stamp Auto (Local)",
+        "shortDescription": "日期、分类、主题格式的 Codex 聊天标题"
+      }
+    }
+  }
+}

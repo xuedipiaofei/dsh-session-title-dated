@@ -1,0 +1,7 @@
+{
+  "enabled": true,
+  "autoRefresh": false,
+  "refreshMinIntervalSeconds": 120,
+  "refreshMaxUpdates": 100,
+  "timeZone": "Asia/Shanghai"
+}

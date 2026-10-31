@@ -1,5 +1,7 @@
 # dsh-session-title-stamp
 
+> **Codex:** [市场版与本地体验 / Marketplace & local setup](./docs/codex-marketplace.md)。市场版 `codex-public/` 支持按需预览和刷新；`codex/` 保留本地自动命名实验版。公共目录尚未发布。
+
 [English](./README.md) | 中文
 
 给 DSH 会话一个稳定的「日期 | 分类 | 名称」标题。除了自动命名，还包括：

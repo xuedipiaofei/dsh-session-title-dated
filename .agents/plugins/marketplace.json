@@ -1,0 +1,32 @@
+{
+  "name": "session-title-stamp",
+  "interface": {
+    "displayName": "Session title stamp"
+  },
+  "plugins": [
+    {
+      "name": "session-title-stamp",
+      "source": {
+        "source": "local",
+        "path": "./codex-public"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "codex-session-title-stamp",
+      "source": {
+        "source": "local",
+        "path": "./codex"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

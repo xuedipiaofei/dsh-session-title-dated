@@ -1,0 +1,41 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "session-title-stamp",
+  "version": "0.2.1",
+  "description": "Preview or refresh the current chat title with a verified creation date, category and topic.",
+  "author": {
+    "name": "xuedipiaofei",
+    "url": "https://github.com/xuedipiaofei"
+  },
+  "homepage": "https://github.com/xuedipiaofei/dsh-session-title-stamp",
+  "license": "MIT",
+  "extensions": {
+    "com.openai": {
+      "requires_local_executor": true,
+      "onboardingSkill": "./skills/title-stamp-setup/SKILL.md",
+      "interface": {
+        "displayName": "Session title stamp",
+        "shortDescription": "Clear, dated chat titles",
+        "longDescription": "Preview or refresh the current chat title as creation date | category | topic. Supports Chinese and English categories, local or specified time zones, and MMDD or YYYYMMDD dates. Includes a compatibility check. Renaming requires official current-chat read/write tools in the desktop host; where unavailable, the skill explains the limitation and can suggest topic/category text. Requires Python 3.9+ and local execution. No background renaming, hooks, bulk access, external service, or telemetry.",
+        "developerName": "xuedipiaofei",
+        "category": "Productivity",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "websiteURL": "https://github.com/xuedipiaofei/dsh-session-title-stamp",
+        "supportURL": "https://github.com/xuedipiaofei/dsh-session-title-stamp/issues",
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/icon.png",
+        "defaultPrompt": [
+          "Preview a dated title for this chat.",
+          "刷新当前聊天标题，使用上海时区。",
+          "Check whether title renaming is available in this chat."
+        ]
+      },
+      "publication": {
+        "release_notes": "Adds a read-only local diagnostic command and GitHub installation, update and troubleshooting documentation."
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [{"hooks": [{
+      "type": "command",
+      "command": "python3 \"${PLUGIN_ROOT}/scripts/title_stamp.py\" hook",
+      "timeout": 5
+    }]}]
+  }
+}

@@ -18,3 +18,9 @@ jobs:
       - run: node --version
       - run: npm test
       - run: npm pack --dry-run
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python3 -m unittest discover -s codex -p "test_*.py" -v
+      - run: python3 scripts/package-codex.py /tmp/codex-session-title-stamp.zip
+      - run: python3 scripts/package-codex.py /tmp/session-title-stamp-public.zip --public

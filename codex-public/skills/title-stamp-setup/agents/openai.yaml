@@ -1,0 +1,3 @@
+interface:
+  display_name: "Title stamp setup"
+  short_description: "Check title-stamp compatibility without renaming"

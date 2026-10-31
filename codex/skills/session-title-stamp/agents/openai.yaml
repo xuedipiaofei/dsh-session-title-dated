@@ -1,0 +1,3 @@
+interface:
+  display_name: "Session title stamp"
+  short_description: "为当前 Codex 聊天生成或刷新日期分类标题"

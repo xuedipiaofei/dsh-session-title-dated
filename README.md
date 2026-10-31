@@ -1,5 +1,7 @@
 # dsh-session-title-stamp
 
+> **Codex:** [市场版与本地体验 / Marketplace & local setup](./docs/codex-marketplace.md)。市场版 `codex-public/` 支持按需预览和刷新；`codex/` 保留本地自动命名实验版。公共目录尚未发布。
+
 [![npm](https://img.shields.io/npm/v/dsh-session-title-stamp.svg)](https://www.npmjs.com/package/dsh-session-title-stamp)
 [![license](https://img.shields.io/npm/l/dsh-session-title-stamp.svg)](./LICENSE)
 [![DSH](https://img.shields.io/badge/DSH-0.2.x-4f46e5.svg)](https://github.com/deepseek-ai/deepseek-harness)
