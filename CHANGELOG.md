@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.4 — 2026-10-31
+
+- CI: verify npm trusted publishing (OIDC) and skip the publish step when the version already exists.
+
 ## 0.4.3 — 2026-10-31
 
 - Normalize `session-` prefixed session ids in the stats route.

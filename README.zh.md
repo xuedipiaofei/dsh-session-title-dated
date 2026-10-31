@@ -43,7 +43,7 @@
 在 **插件 → 发现（Discover）→ 索引源** 添加：
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-stamp@v0.4.3/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-stamp@v0.4.4/market/index.json
 ```
 
 然后在列表里安装 **Session title stamp / 会话标题印章**。插件以 profile bundle 的形式安装，之后可在插件页启停。
@@ -93,7 +93,7 @@ fork 子会话、子代理会话，以及用户手动改名固定的标题都会
 
 ### 会话头按钮与悬停统计
 
-0.4.3 增加了一个很小的浏览器半边：
+0.4.4 增加了一个很小的浏览器半边：
 
 - 会话头有一个**刷新图标**，效果等同输入 `/retitle`，会话运行中禁用；
 - 鼠标悬停会话行时，在原生相对时间下面多一行：

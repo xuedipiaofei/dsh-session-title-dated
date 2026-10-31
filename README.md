@@ -59,7 +59,7 @@ and mirrors conventions used by other coding agents.
 Add this market index source in **Plugins → Discover → Index sources**:
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-stamp@v0.4.3/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-stamp@v0.4.4/market/index.json
 ```
 
 Then install **Session title stamp** from the list. The plugin installs as a
@@ -129,7 +129,7 @@ mode using `retitleEvery`.
 
 ### Header button and hover stats
 
-0.4.3 adds a small browser half:
+0.4.4 adds a small browser half:
 
 - a **refresh icon** in the conversation header; it runs the same `/retitle`
   command as typing it, and is disabled while the session is running.

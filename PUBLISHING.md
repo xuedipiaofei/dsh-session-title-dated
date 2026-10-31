@@ -4,6 +4,7 @@ This repository is already shaped as a DSH bundle and a format-1 market entry.
 
 ## Current releases
 
+- **0.4.4 (2026-10-31)**: verify OIDC trusted publishing; CI publish guard.
 - **0.4.3 (2026-10-31)**: fix hover stats for prefixed session ids and clear stale data.
 - **0.4.2 (2026-10-31)**: locale-aware client labels and "自动生成标题" / "Generate title" action.
 - **0.4.1 (2026-10-30)**: final new-name release; turn/end refresh, backfill,
@@ -196,7 +197,7 @@ Commit and push the index change.
 Use jsDelivr over GitHub (HTTPS, no redirects, no Pages setup):
 
 ```text
-https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-stamp@v0.4.3/market/index.json
+https://cdn.jsdelivr.net/gh/xuedipiaofei/dsh-session-title-stamp@v0.4.4/market/index.json
 ```
 
 Prefer the tag URL: jsDelivr caches `@main` for a long time, and a cached copy
